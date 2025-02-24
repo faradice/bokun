@@ -1,8 +1,9 @@
 plugins {
     kotlin("jvm") version "2.1.10"
+    id("application")
 }
 
-group = "org.bockun"
+group = "com.bokun.email.processor"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -46,12 +47,15 @@ dependencies {
     // Jackson for JSON parsing
     implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2")
-
 }
 
+application {
+    mainClass.set("com.bokun.email.processor.app.App")
+}
 tasks.test {
     useJUnitPlatform()
 }
 kotlin {
     jvmToolchain(20)
 }
+
