@@ -33,4 +33,29 @@ object LinkService {
             logger.error("Failed to store link", e)
         }
     }
+
+    fun getAllLinks(): List<Map<String, Any>> {
+        val links = mutableListOf<Map<String, Any>>()
+
+        try {
+            val query = "SELECT id, shortId, originalUrl FROM links"
+            DatabaseManager.getConnection()?.prepareStatement(query)?.use { pstmt ->
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        links.add(
+                            mapOf(
+                                "id" to rs.getInt("id"),
+                                "shortId" to rs.getString("shortId"),
+                                "originalUrl" to rs.getString("originalUrl")
+                            )
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            println("Error fetching links: ${e.message}")
+        }
+
+        return links
+    }
 }

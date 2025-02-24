@@ -5,6 +5,7 @@ import com.bokun.email.processor.services.RedirectService
 import io.javalin.Javalin
 import org.slf4j.LoggerFactory
 import com.bokun.email.processor.config.ConfigLoader
+import com.bokun.email.processor.database.DatabaseManager
 import com.bokun.email.processor.services.LinkService
 
 object App {
@@ -13,16 +14,24 @@ object App {
     @JvmStatic
     fun main(args: Array<String>) {
         ConfigLoader.loadConfig()
+        DatabaseManager.initializeDatabase()
         val app = Javalin.create().start(8080)
 
         app.post("/api/links", LinkCreationService::createShortLink)
+
         app.get("/api/r/{shortId}", RedirectService::trackAndRedirect)
         app.get("/api/analytics", RedirectService::getClickAnalytics)
+
         app.post("/api/process-email", LinkService::processEmail)
 
         // Simple test form that calls the process-email api
         app.get("/test-email") { ctx ->
             ctx.contentType("text/html").result(this::class.java.getResource("/email_test_form.html")!!.readText())
+        }
+
+        app.get("/api/links") { ctx ->
+            val links = LinkService.getAllLinks()
+            ctx.json(links)
         }
 
         logger.info("Server started on port 8080")

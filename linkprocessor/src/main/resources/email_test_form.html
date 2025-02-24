@@ -12,7 +12,7 @@
     <textarea id="emailContent" rows="6" cols="50">
 Hello,
 
-Two test links:
+Here are two links:
 1. https://example.com/link1
 2. https://example.com/link2
 
@@ -22,6 +22,19 @@ Test User
     <br><br>
     <button type="button" onclick="sendEmail()">Send Email</button>
 </form>
+
+<h2>Shortened Links</h2>
+<table border="1">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Short ID</th>
+        <th>Original URL</th>
+    </tr>
+    </thead>
+    <tbody id="linksTable">
+    </tbody>
+</table>
 
 <script>
     function sendEmail() {
@@ -34,9 +47,33 @@ Test User
             body: JSON.stringify({ content: emailContent })
         })
         .then(response => response.json())
-        .then(data => alert("Email was processed", JSON.stringify(data)))
-        .catch(error => alert("Error processing email:" + error));
+            .then(data => {
+                alert("Email processed: " + JSON.stringify(data));
+                fetchLinks(); // Refresh links table after storing a new link
+            })
+         .catch(error => alert("Error processing email:" + error));
     }
+
+    function fetchLinks() {
+        fetch("/api/links")
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById("linksTable");
+            tableBody.innerHTML = ""; // Clear existing data
+            data.forEach(link => {
+                const row = `<tr>
+                    <td>${link.id}</td>
+                    <td>${link.shortId}</td>
+                    <td><a href="${link.originalUrl}" target="_blank">${link.originalUrl}</a></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        })
+        .catch(error => console.error("Error fetching links:", error));
+    }
+
+    // Fetch links when the page loads
+    window.onload = fetchLinks;
 </script>
 </body>
 </html>
