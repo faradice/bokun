@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Test Form</title>
+</head>
+<body>
+<h2>Email Processor Test</h2>
+<form id="emailForm">
+    <label for="emailContent">Email Content:</label><br>
+    <textarea id="emailContent" rows="6" cols="50">
+Hello,
+
+Two test links:
+1. https://example.com/link1
+2. https://example.com/link2
+
+Hello,
+Test User
+        </textarea>
+    <br><br>
+    <button type="button" onclick="sendEmail()">Send Email</button>
+</form>
+
+<script>
+    function sendEmail() {
+        const emailContent = document.getElementById("emailContent").value;
+        fetch("/api/process-email", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ content: emailContent })
+        })
+        .then(response => response.json())
+        .then(data => alert("Email was processed", JSON.stringify(data)))
+        .catch(error => alert("Error processing email:" + error));
+    }
+</script>
+</body>
+</html>

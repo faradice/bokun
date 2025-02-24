@@ -37,10 +37,6 @@ dependencies {
     implementation("io.prometheus:simpleclient_httpserver:0.16.0")
 
     // Testing dependencies
-
-    // JUnit for testing
-    testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
-
     testImplementation("org.junit.jupiter:junit-jupiter:5.9.3")
     testImplementation("io.mockk:mockk:1.13.5")
 
