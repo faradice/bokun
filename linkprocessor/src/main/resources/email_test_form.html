@@ -16,7 +16,7 @@ Here are two links:
 1. https://example.com/link1
 2. https://example.com/link2
 
-Hello,
+Best,
 Test User
         </textarea>
     <br><br>
@@ -47,11 +47,11 @@ Test User
             body: JSON.stringify({ content: emailContent })
         })
         .then(response => response.json())
-            .then(data => {
-                alert("Email processed: " + JSON.stringify(data));
-                fetchLinks(); // Refresh links table after storing a new link
-            })
-         .catch(error => alert("Error processing email:" + error));
+        .then(data => {
+            alert("Processed Email: " + JSON.stringify(data));
+            fetchLinks(); // Refresh links table after storing a new link
+        })
+        .catch(error => alert("Error processing email: " + error));
     }
 
     function fetchLinks() {
@@ -64,7 +64,7 @@ Test User
                 const row = `<tr>
                     <td>${link.id}</td>
                     <td>${link.shortId}</td>
-                    <td><a href="${link.originalUrl}" target="_blank">${link.originalUrl}</a></td>
+                    <td><a href="/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });

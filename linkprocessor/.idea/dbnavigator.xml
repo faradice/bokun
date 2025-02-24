@@ -26,7 +26,9 @@
     <connection id="14fc1680-54ec-410c-ba2c-2aacc705f329">
       <console name="ProcessedLinks" type="STANDARD" schema="email_processor" session="Main"><![CDATA[select * from links
 select * from clicks
-select * from sqlite_sequence]]></console>
+select * from sqlite_sequence
+delete from links
+commit]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -39,6 +41,10 @@ select * from sqlite_sequence]]></console>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="14fc1680-54ec-410c-ba2c-2aacc705f329" />
+  </component>
+  <component name="DBNavigator.Project.DatasetFilterManager">
+    <filter-actions connection-id="14fc1680-54ec-410c-ba2c-2aacc705f329" dataset="email_processor.clicks" active-filter-id="" />
+    <filter-actions connection-id="14fc1680-54ec-410c-ba2c-2aacc705f329" dataset="email_processor.links" active-filter-id="" />
   </component>
   <component name="DBNavigator.Project.ExecutionManager">
     <retain-sticky-names value="false" />

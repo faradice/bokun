@@ -34,7 +34,12 @@ object DatabaseManager {
         }
     }
 
-    fun getConnection(): Connection? = connection
+    fun getConnection(): Connection? {
+        if (connection == null || connection!!.isClosed) {
+            connection = DriverManager.getConnection("jdbc:sqlite:email_processor.db")
+        }
+        return connection
+    }
 
     fun createLink(shortId: String, originalUrl: String, expiration: Timestamp?): Boolean {
         return try {

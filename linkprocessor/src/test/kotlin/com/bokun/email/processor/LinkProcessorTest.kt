@@ -2,7 +2,7 @@ package com.bokun.email.processor
 
 import com.bokun.email.processor.database.DatabaseManager
 import com.bokun.email.processor.services.LinkCreationService
-import com.bokun.email.processor.services.LinkRequest
+import com.bokun.email.processor.model.*
 import com.bokun.email.processor.services.RedirectService
 import com.bokun.email.processor.config.ConfigLoader
 import io.javalin.Javalin

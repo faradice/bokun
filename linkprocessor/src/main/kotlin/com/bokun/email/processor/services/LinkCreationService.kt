@@ -1,6 +1,7 @@
 package com.bokun.email.processor.services
 
 import com.bokun.email.processor.database.DatabaseManager
+import com.bokun.email.processor.model.LinkRequest
 import org.slf4j.LoggerFactory
 import java.sql.Timestamp
 import java.time.LocalDateTime
@@ -43,5 +44,3 @@ object LinkCreationService {
         }
     }
 }
-
-data class LinkRequest(val originalUrl: String, val expiration: String?)

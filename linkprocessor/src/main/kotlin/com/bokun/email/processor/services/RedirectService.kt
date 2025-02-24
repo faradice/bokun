@@ -52,7 +52,12 @@ object RedirectService {
             DatabaseManager.getConnection()?.prepareStatement("SELECT originalUrl FROM links WHERE shortId = ?")?.use { pstmt ->
                 pstmt.setString(1, shortId)
                 pstmt.executeQuery().use { rs ->
-                    if (rs.next()) rs.getString("originalUrl") else null
+                    if (rs.next())  {
+                        rs.getString("originalUrl")
+                    } else  {
+                        null
+                    }
+
                 }
             }
         } catch (e: SQLException) {

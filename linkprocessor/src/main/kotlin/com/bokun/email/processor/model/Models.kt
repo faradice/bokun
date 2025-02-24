@@ -2,6 +2,21 @@ package com.bokun.email.processor.model
 
 import java.time.LocalDateTime
 
-data class Link(val shortId: String, val originalUrl: String)
+data class Link(
+    val shortId: String,
+    val originalUrl: String,
+    val expiration: LocalDateTime = LocalDateTime.now().plusDays(30),  // ✅ Default expiration: 30 days
+    val clickCount: Int = 0  // ✅ Default click count: 0
+)
 
-data class ClickEvent(val shortId: String, val userAgent: String, val ipAddress: String, val timestamp: LocalDateTime)
+data class ClickEvent(
+    val shortId: String,
+    val userAgent: String,
+    val ipAddress: String,
+    val timestamp: LocalDateTime
+)
+
+data class LinkRequest(
+    val originalUrl: String,
+    val expiration: String?
+)
