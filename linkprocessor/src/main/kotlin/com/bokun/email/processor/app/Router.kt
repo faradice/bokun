@@ -14,9 +14,7 @@ object Router {
         app.post("/api/process-email", LinkService::processEmail)
 
         // get api
-        app.get("/api/analytics") {
-            RedirectService.getClickAnalytics(it)
-        }
+        app.get("/api/analytics", RedirectService::getClickAnalytics)
 
         app.get("/api/links") { ctx ->
             ctx.contentType("application/json").result(LinkService.getAllLinksJson())
@@ -34,10 +32,10 @@ object Router {
         }
 
         app.get(
-            "/confirm/{shortId}", LinkService::getConfirmationPage
+            "api/confirm/{shortId}", LinkService::getConfirmationPage
         )
 
-        app.get("/test-email") { ctx ->
+        app.get("api/test-email") { ctx ->
             ctx.contentType("text/html").result(this::class.java.getResource("/email_test_form.html")!!.readText())
         }
     }

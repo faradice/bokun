@@ -49,7 +49,7 @@ object RedirectService {
 
     private fun retrieveOriginalUrl(shortId: String): String? {
         return try {
-            DatabaseManager.getConnection()?.prepareStatement("SELECT originalUrl FROM links WHERE shortId = ?")?.use { pstmt ->
+                DatabaseManager.getConnection()?.prepareStatement("SELECT originalUrl FROM links WHERE shortId = ?")?.use { pstmt ->
                 pstmt.setString(1, shortId)
                 pstmt.executeQuery().use { rs ->
                     if (rs.next())  {

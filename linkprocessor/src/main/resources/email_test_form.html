@@ -12,11 +12,13 @@
     <textarea id="emailContent" rows="6" cols="50">
 Hello,
 
-Here are two links:
-1. https://example.com/link1
-2. https://example.com/link2
+This is a test email which contains the following links.
+Click on the <Send Email> button to send the mail
+1. https://mbl.is
+2. https://dv.is
+https://google.com
 
-Best,
+All the best,
 Test User
         </textarea>
     <br><br>
@@ -64,7 +66,7 @@ Test User
                 const row = `<tr>
                     <td>${link.id}</td>
                     <td>${link.shortId}</td>
-                    <td><a href="/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+                    <td><a href="confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
