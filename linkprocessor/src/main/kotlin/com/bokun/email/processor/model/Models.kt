@@ -5,11 +5,11 @@ import java.time.LocalDateTime
 data class Link(
     val shortId: String,
     val originalUrl: String,
-    val expiration: LocalDateTime = LocalDateTime.now().plusDays(30),  // ✅ Default expiration: 30 days
-    val clickCount: Int = 0  // ✅ Default click count: 0
+    val expiration: LocalDateTime = LocalDateTime.now().plusDays(10),  // ✅ Default expiration: 30 days
+    val clickCount: Int = 0
 )
 
-data class ClickEvent(
+data class Click(
     val shortId: String,
     val userAgent: String,
     val ipAddress: String,

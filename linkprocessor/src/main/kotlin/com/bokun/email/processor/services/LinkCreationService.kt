@@ -1,6 +1,7 @@
 package com.bokun.email.processor.services
 
 import com.bokun.email.processor.database.DatabaseManager
+import com.bokun.email.processor.database.LinkDB
 import com.bokun.email.processor.model.LinkRequest
 import org.slf4j.LoggerFactory
 import java.sql.Timestamp
@@ -22,7 +23,7 @@ object LinkCreationService {
         }
         
         val expiration = parseExpiration(requestBody.expiration)
-        val success = DatabaseManager.createLink(shortId, requestBody.originalUrl, expiration)
+        val success = LinkDB.createLink(shortId, requestBody.originalUrl, expiration)
         
         if (success) {
             ctx.status(201).json(mapOf("shortId" to shortId, "originalUrl" to requestBody.originalUrl, "expiration" to expiration))

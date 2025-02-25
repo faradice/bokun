@@ -5,9 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/Router.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/LinkDB.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/confirm.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/email_processor.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/App.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/App.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/DatabaseManager.kt" afterDir="false" />
@@ -15,8 +18,6 @@
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkCreationService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkCreationService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/email_test_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/email_test_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -86,6 +87,8 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Kotlin Class" />
+        <option value="Class" />
+        <option value="Kotlin Object" />
       </list>
     </option>
   </component>
@@ -104,7 +107,7 @@
   "keyToString": {
     "Gradle.Build linkprocessor.executor": "Run",
     "Gradle.LinkProcessorTest.executor": "Run",
-    "Gradle.LinkProcessorTest.should create short link successfully.executor": "Run",
+    "Gradle.LinkProcessorTest.should create short link successfully.executor": "Debug",
     "Gradle.LinkProcessorTest.should handle concurrent requests correctly.executor": "Run",
     "Gradle.LinkProcessorTest.should handle high-load scenarios.executor": "Run",
     "Gradle.LinkProcessorTest.should redirect to original URL.executor": "Run",
@@ -135,6 +138,9 @@
     </key>
     <key name="MoveKotlinTopLevelDeclarationsDialog.RECENTS_KEY">
       <recent name="com.bokun.email.processor" />
+    </key>
+    <key name="CopyKotlinDeclarationDialog.RECENTS_KEY">
+      <recent name="com.bokun.email.processor.database" />
     </key>
   </component>
   <component name="RunAnythingCache">
@@ -167,6 +173,30 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="LinkProcessorTest.should create short link successfully" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.bokun.email.processor.LinkProcessorTest.should create short link successfully&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="LinkProcessorTest.should handle high-load scenarios" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -181,30 +211,6 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;com.bokun.email.processor.LinkProcessorTest.should handle high-load scenarios&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="LinkProcessorTest.should rollback transaction on database failure" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;com.bokun.email.processor.LinkProcessorTest.should rollback transaction on database failure&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -247,10 +253,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Kotlin.App" />
-        <item itemvalue="Gradle.linkprocessor [run]" />
         <item itemvalue="Gradle.LinkProcessorTest" />
+        <item itemvalue="Gradle.LinkProcessorTest.should create short link successfully" />
+        <item itemvalue="Gradle.linkprocessor [run]" />
         <item itemvalue="Gradle.LinkProcessorTest.should handle high-load scenarios" />
-        <item itemvalue="Gradle.LinkProcessorTest.should rollback transaction on database failure" />
       </list>
     </recent_temporary>
   </component>
@@ -280,7 +286,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkCreationService.kt</url>
-          <line>15</line>
+          <line>16</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
@@ -308,20 +314,15 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="kotlin-line">
           <url>file://$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt</url>
-          <line>47</line>
-          <option name="timeStamp" value="37" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt</url>
-          <line>50</line>
-          <option name="timeStamp" value="39" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="kotlin-line">
-          <url>file://$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt</url>
-          <line>45</line>
-          <option name="timeStamp" value="40" />
+          <line>18</line>
+          <option name="timeStamp" value="45" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="JetRunConfigurationType">
+        <watch expression="throwable" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

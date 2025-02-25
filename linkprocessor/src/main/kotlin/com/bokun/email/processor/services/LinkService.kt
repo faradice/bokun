@@ -1,7 +1,12 @@
 package com.bokun.email.processor.services
 
 import com.bokun.email.processor.database.DatabaseManager
+import com.bokun.email.processor.database.LinkDB
+
 import com.bokun.email.processor.model.Link
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import java.util.UUID
@@ -30,8 +35,9 @@ object LinkService {
     }
 
     fun storeLinks(links: List<Link>) {
+        var connection = DatabaseManager.getConnection()
         try {
-            DatabaseManager.getConnection()?.use { connection ->
+            connection?.use { connection ->
                 connection.autoCommit = false
                 val query = "INSERT INTO links (shortId, originalUrl, expiration, clickCount) VALUES (?, ?, ?, ?)"
 
@@ -45,62 +51,43 @@ object LinkService {
                     }
                     pstmt.executeBatch()
                 }
-               connection.commit()
+                connection.commit()
             }
         } catch (e: SQLException) {
             println("Error storing links: ${e.message}")
         }
     }
 
-    fun getAllLinks(): List<Map<String, Any>> {
-        val links = mutableListOf<Map<String, Any>>()
 
-        try {
-            val query = "SELECT id, shortId, originalUrl FROM links"
-            DatabaseManager.getConnection()?.prepareStatement(query)?.use { pstmt ->
-                pstmt.executeQuery().use { rs ->
-                    while (rs.next()) {
-                        links.add(
-                            mapOf(
-                                "id" to rs.getInt("id"),
-                                "shortId" to rs.getString("shortId"),
-                                "originalUrl" to rs.getString("originalUrl")
-                            )
-                        )
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            println("Error fetching links: ${e.message}")
-        }
-
-        return links
+    fun getAllLinksJson(): String {
+        val links = LinkDB.getAllLinks()
+        // Jackson does not support LocalDateTime by default
+        val mapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+        return mapper.writeValueAsString(links)
     }
 
-    fun getLinkByShortId(shortId: String): Map<String, Any>? {
-        var link: Map<String, Any>? = null
-
-        try {
-            DatabaseManager.getConnection()?.use { connection ->
-                val query = "SELECT id, shortId, originalUrl FROM links WHERE shortId = ?"
-                connection.prepareStatement(query).use { pstmt ->
-                    pstmt.setString(1, shortId)
-                    pstmt.executeQuery().use { rs ->
-                        if (rs.next()) {
-                            link = mapOf(
-                                "id" to rs.getInt("id"),
-                                "shortId" to rs.getString("shortId"),
-                                "originalUrl" to rs.getString("originalUrl")
-                            )
-                        }
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            println("Error fetching link: ${e.message}")
-        }
-
-        return link
+    fun getLinkJson(shortId: String): String {
+        val link = LinkDB.getLinkByShortId(shortId)
+        val mapper = jacksonObjectMapper().registerModule(JavaTimeModule())
+        return mapper.writeValueAsString(link)
     }
 
+    fun getLinkObject(shortId: String): Link? {
+        return LinkDB.getLinkByShortId(shortId)
+    }
+
+    fun getConfirmationPage(ctx: Context) {
+        val shortId = ctx.pathParam("shortId")
+        val link = getLinkObject(shortId)
+
+        if (link == null) {
+            ctx.status(404).result("Link not found")
+        } else {
+            var html = this::class.java.getResource("/confirm.html")!!.readText()
+            html = html.replace("{{shortId}}", shortId)
+                .replace("{{originalUrl}}", link.originalUrl)
+
+            ctx.contentType("text/html").result(html)
+        }
+    }
 }

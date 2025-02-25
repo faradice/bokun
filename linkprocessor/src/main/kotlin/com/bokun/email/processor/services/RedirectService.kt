@@ -1,7 +1,7 @@
 package com.bokun.email.processor.services
 
 import com.bokun.email.processor.database.DatabaseManager
-import com.bokun.email.processor.model.ClickEvent
+import com.bokun.email.processor.model.Click
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
 import java.time.LocalDateTime
@@ -37,7 +37,7 @@ object RedirectService {
                 ctx.status(410).result("This link has expired.")
                 return
             }
-            storeClick(ClickEvent(shortId, userAgent, ipAddress, now))
+            storeClick(Click(shortId, userAgent, ipAddress, now))
             incrementClickCount(shortId)
             logger.info("Redirecting {} to {}", shortId, originalUrl)
             ctx.redirect(originalUrl)
@@ -66,7 +66,7 @@ object RedirectService {
         }
     }
 
-    private fun storeClick(clickEvent: ClickEvent) {
+    private fun storeClick(clickEvent: Click) {
         try {
             DatabaseManager.getConnection()?.prepareStatement("INSERT INTO clicks (shortId, userAgent, ipAddress, timestamp) VALUES (?, ?, ?, ?)")?.use { pstmt ->
                 pstmt.setString(1, clickEvent.shortId)

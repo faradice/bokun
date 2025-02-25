@@ -4,10 +4,8 @@ import com.bokun.email.processor.config.ConfigLoader
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.sql.DriverManager
-import java.sql.PreparedStatement
 import java.sql.SQLException
-import java.sql.Timestamp
-import java.util.Properties
+import java.util.*
 
 object DatabaseManager {
     private val logger = LoggerFactory.getLogger(DatabaseManager::class.java)
@@ -39,22 +37,5 @@ object DatabaseManager {
             connection = DriverManager.getConnection("jdbc:sqlite:email_processor.db")
         }
         return connection
-    }
-
-    fun createLink(shortId: String, originalUrl: String, expiration: Timestamp?): Boolean {
-        return try {
-            val query = "INSERT INTO links (shortId, originalUrl, expiration, clickCount) VALUES (?, ?, ?, 0)"
-            connection?.prepareStatement(query)?.use { pstmt ->
-                pstmt.setString(1, shortId)
-                pstmt.setString(2, originalUrl)
-                pstmt.setTimestamp(3, expiration)
-                pstmt.executeUpdate()
-            }
-            logger.info("Created new link: {} -> {} with expiration: {}", shortId, originalUrl, expiration)
-            true
-        } catch (e: SQLException) {
-            logger.error("Failed to create link", e)
-            false
-        }
     }
 }
