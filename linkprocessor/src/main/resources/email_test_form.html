@@ -10,15 +10,15 @@
 <form id="emailForm">
     <label for="emailContent">Email Content:</label><br>
     <textarea id="emailContent" rows="12" cols="100">
-Hello,
+        Hello,
 
-Here are a few links:
-1. https://mbl.is
-2. https://google.com
-3. https://dv.is
+        Here are a few links:
+        1. https://mbl.is
+        2. https://google.com
+        3. https://dv.is
 
-Hello,
-Test User
+        All the best,
+        Test User
     </textarea>
     <br><br>
     <button type="button" onclick="sendEmail()">Send Email</button>
@@ -67,7 +67,13 @@ Test User
             const tableBody = document.getElementById("linksTable");
             tableBody.innerHTML = ""; // Clear existing data
             data.forEach(link => {
-                const expirationDate = link.expiration ? new Date(link.expiration).toLocaleString() : 'N/A';
+                // Convert expiration timestamp (milliseconds) to formatted date
+                const expirationDate = link.expiration && !isNaN(link.expiration)
+                    ? new Date(Number(link.expiration)).toLocaleDateString("en-GB", {
+                        day: "2-digit", month: "short", year: "numeric"
+                      })
+                    : 'N/A';
+
                 const row = `<tr>
                     <td>${link.id}</td>
                     <td>${link.shortId}</td>
@@ -76,9 +82,8 @@ Test User
                     <td><a href="/api/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
                 </tr>`;
                 tableBody.innerHTML += row;
-            });
-        })
-        .catch(error => console.error("Error fetching links:", error));
+           });
+      }).catch(error => console.error("Error fetching links:", error));
     }
 
     // Fetch links when the page loads

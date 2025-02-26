@@ -12,8 +12,9 @@ object App {
     fun main(args: Array<String>) {
         ConfigLoader.loadConfig()
         DatabaseManager.initializeDatabase()
-        val app = Javalin.create().start(8080)
+        val port = ConfigLoader.config.getProperty("server.port", "8080").toInt()
+        val app = Javalin.create().start(port)
         Router.registerRoutes(app)
-        logger.info("Server started on port 8080")
+        logger.info("Server started on port $port")
     }
 }

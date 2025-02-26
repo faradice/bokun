@@ -20,6 +20,7 @@ object ConfigLoader {
         }
     }
 
+    // If we like to watch the file we can call this to start a watcher thread
     fun watchConfigFile() {
         thread {
             try {

@@ -1,6 +1,5 @@
 package com.bokun.email.processor.services
 
-import com.bokun.email.processor.database.DatabaseManager
 import com.bokun.email.processor.database.LinkDB
 
 import com.bokun.email.processor.model.Link
@@ -8,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 
 import org.slf4j.LoggerFactory
-import java.sql.SQLException
 import java.util.UUID
 import io.javalin.http.Context
 import io.javalin.http.bodyAsClass
