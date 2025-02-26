@@ -73,7 +73,7 @@ object RedirectService {
             """
         <tr>
             <td>${link.shortId}</td>
-            <td><a href="/api/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+            <td><a href="/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
             <td>${clickCount}</td>
             <td>${expirationStatus}</td>
             <td>${rateLimitStatus}</td>

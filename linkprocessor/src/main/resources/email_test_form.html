@@ -45,14 +45,14 @@
 <script>
     function sendEmail() {
         const emailContent = document.getElementById("emailContent").value;
-        fetch("/api/process-email", {
+        fetch("/process-email", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({ content: emailContent })
         })
-        .then(response => response.text())  // Expect HTML instead of JSON
+        .then(response => response.text())
         .then(html => {
             document.getElementById("processedEmail").innerHTML = html;
             fetchLinks(); // Refresh links table after storing a new link
@@ -79,7 +79,7 @@
                     <td>${link.shortId}</td>
                     <td>${expirationDate}</td>
                     <td>${link.clickCount}</td>
-                    <td><a href="/api/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+                    <td><a href="/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
                 </tr>`;
                 tableBody.innerHTML += row;
            });

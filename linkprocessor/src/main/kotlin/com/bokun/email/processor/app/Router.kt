@@ -7,17 +7,11 @@ import io.javalin.Javalin
 object Router {
     fun registerRoutes(app: Javalin) {
 
-        // post api
-        app.post("/api/process-email", LinkService::processEmail)
-
-        // get api
+        // API Endpoints
         app.get("/api/r/{shortId}", RedirectService::trackAndRedirect)
-        app.get("/api/analytics", RedirectService::getClickAnalytics)
-
         app.get("/api/links") { ctx ->
             ctx.contentType("application/json").result(LinkService.getAllLinksJson())
         }
-
         app.get("/api/link/{shortId}") { ctx ->
             val shortId = ctx.pathParam("shortId")
             val linkJson = LinkService.getLinkJson(shortId)
@@ -29,11 +23,13 @@ object Router {
             }
         }
 
-        app.get(
-            "api/confirm/{shortId}", LinkService::getConfirmationPage
-        )
+        // Confirmation Page
+        app.get("/confirm/{shortId}", LinkService::getConfirmationPage)
 
-        app.get("api/test-email") { ctx ->
+        // User-Facing Pages
+        app.post("/process-email", LinkService::processEmail)
+        app.get("/analytics", RedirectService::getClickAnalytics)
+        app.get("/test-email") { ctx ->
             ctx.contentType("text/html").result(this::class.java.getResource("/email_test_form.html")!!.readText())
         }
     }
