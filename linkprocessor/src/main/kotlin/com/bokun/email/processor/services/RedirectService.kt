@@ -53,26 +53,62 @@ object RedirectService {
         val clickData = ClickDB.getGroupOfClickCounts()
         val linkData = LinkDB.getAllLinks()
 
+        var totalClicks = 0
+        var expiredCount = 0
+        var rateLimitedCount = 0
+
         val analyticsTableRows = linkData.joinToString("") { link ->
             val clickCount = clickData[link.shortId] ?: 0
+            totalClicks += clickCount
+
             val isExpired = ClickDB.isLinkExpired(link.shortId)
+            if (isExpired) expiredCount++
+
             val hasExceededRateLimit = ClickDB.hasExceededRateLimit(link.shortId)
+            if (hasExceededRateLimit) rateLimitedCount++
+
             val expirationStatus = if (isExpired) "<span style='color: red;'>Expired</span>" else "<span style='color: green;'>Active</span>"
             val rateLimitStatus = if (hasExceededRateLimit) "<span style='color: orange;'>Rate Limit Exceeded</span>" else "<span style='color: green;'>OK</span>"
 
             """
-            <tr>
-                <td>${link.shortId}</td>
-                <td><a href="/api/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
-                <td>${clickCount}</td>
-                <td>${expirationStatus}</td>
-                <td>${rateLimitStatus}</td>
-            </tr>
-            """.trimIndent()
+        <tr>
+            <td>${link.shortId}</td>
+            <td><a href="/api/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+            <td>${clickCount}</td>
+            <td>${expirationStatus}</td>
+            <td>${rateLimitStatus}</td>
+        </tr>
+        """.trimIndent()
+        }
+
+        // Expired links table
+        val expiredTableRows = linkData.filter { ClickDB.isLinkExpired(it.shortId) }.joinToString("") { link ->
+            """
+        <tr>
+            <td>${link.shortId}</td>
+            <td><a href="${link.originalUrl}" target="_blank">${link.originalUrl}</a></td>
+        </tr>
+        """.trimIndent()
+        }
+
+        // Rate-Limited links table
+        val rateLimitedTableRows = linkData.filter { ClickDB.hasExceededRateLimit(it.shortId) }.joinToString("") { link ->
+            """
+        <tr>
+            <td>${link.shortId}</td>
+            <td><a href="${link.originalUrl}" target="_blank">${link.originalUrl}</a></td>
+        </tr>
+        """.trimIndent()
         }
 
         val template = this::class.java.getResource("/analytics.html")!!.readText()
-        val analyticsHtml = template.replace("{{analyticsTableRows}}", analyticsTableRows)
+        val analyticsHtml = template
+            .replace("{{analyticsTableRows}}", analyticsTableRows)
+            .replace("{{totalClicks}}", totalClicks.toString())
+            .replace("{{expiredCount}}", expiredCount.toString())
+            .replace("{{rateLimitedCount}}", rateLimitedCount.toString())
+            .replace("{{expiredTableRows}}", expiredTableRows)
+            .replace("{{rateLimitedTableRows}}", rateLimitedTableRows)
 
         ctx.contentType("text/html").result(analyticsHtml)
     }
