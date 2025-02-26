@@ -27,37 +27,12 @@ object LinkService {
         }
 
         if (linksToStore.isNotEmpty()) {
-            storeLinks(linksToStore)
+            LinkDB.storeLinks(linksToStore)
         }
 
         ctx.result(processedContent)
         logger.info("Processed email content and replaced links.")
     }
-
-    fun storeLinks(links: List<Link>) {
-        var connection = DatabaseManager.getConnection()
-        try {
-            connection?.use { connection ->
-                connection.autoCommit = false
-                val query = "INSERT INTO links (shortId, originalUrl, expiration, clickCount) VALUES (?, ?, ?, ?)"
-
-                connection.prepareStatement(query).use { pstmt ->
-                    for (link in links) {
-                        pstmt.setString(1, link.shortId)
-                        pstmt.setString(2, link.originalUrl)
-                        pstmt.setTimestamp(3, java.sql.Timestamp.valueOf(link.expiration))
-                        pstmt.setInt(4, link.clickCount)
-                        pstmt.addBatch()
-                    }
-                    pstmt.executeBatch()
-                }
-                connection.commit()
-            }
-        } catch (e: SQLException) {
-            println("Error storing links: ${e.message}")
-        }
-    }
-
 
     fun getAllLinksJson(): String {
         val links = LinkDB.getAllLinks()

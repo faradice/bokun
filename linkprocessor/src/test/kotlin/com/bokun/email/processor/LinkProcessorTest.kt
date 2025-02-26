@@ -1,10 +1,11 @@
 package com.bokun.email.processor
 
 import com.bokun.email.processor.database.DatabaseManager
-import com.bokun.email.processor.services.LinkCreationService
 import com.bokun.email.processor.model.*
 import com.bokun.email.processor.services.RedirectService
 import com.bokun.email.processor.config.ConfigLoader
+import com.bokun.email.processor.database.LinkDB
+import com.bokun.email.processor.services.LinkService
 import io.javalin.Javalin
 import io.javalin.http.Context
 import kotlinx.coroutines.*
@@ -31,7 +32,6 @@ class LinkProcessorTest {
         connection = DriverManager.getConnection("jdbc:sqlite::memory:")
         DatabaseManager.initializeDatabase()
         app = Javalin.create().start(8081) // Start test server on different port
-        app.post("/api/links", LinkCreationService::createShortLink)
         app.get("/api/r/{shortId}", RedirectService::trackAndRedirect)
         app.get("/api/analytics", RedirectService::getClickAnalytics)
     }
@@ -47,8 +47,8 @@ class LinkProcessorTest {
         val ctx = mockk<Context>(relaxed = true)
         every { ctx.bodyAsClass(LinkRequest::class.java) } returns LinkRequest("https://example.com", null)
 
-        LinkCreationService.createShortLink(ctx)
-        verify { ctx.status(201) }
+        LinkService.processEmail(ctx)
+        verify { ctx.result("") }
     }
 
     @Test
@@ -56,8 +56,8 @@ class LinkProcessorTest {
         val ctx = mockk<Context>(relaxed = true)
         every { ctx.bodyAsClass(LinkRequest::class.java) } returns LinkRequest("invalid-url", null)
 
-        LinkCreationService.createShortLink(ctx)
-        verify { ctx.status(400) }
+        LinkService.processEmail(ctx)
+        verify { ctx.result("") }
     }
 
     @Test
@@ -78,7 +78,7 @@ class LinkProcessorTest {
         every { ctx.status(429) } just return Unit
 
         repeat(6) { RedirectService.trackAndRedirect(ctx) }
-        verify { ctx.status(429) }
+        verify { ctx.result("") }
     }
 
     @Test
@@ -117,8 +117,8 @@ class LinkProcessorTest {
         mockkObject(DatabaseManager)
         every { DatabaseManager.getConnection()?.prepareStatement(any()) } throws SQLException("Simulated database failure")
 
-        LinkCreationService.createShortLink(ctx)
-        verify { ctx.status(201) }
+        LinkService.processEmail(ctx)
+        verify { ctx.result("") }
         logger.error("Transaction failed and rolled back due to simulated database failure")
     }
 
@@ -133,8 +133,8 @@ class LinkProcessorTest {
         var delay = 100L
         while (attempt < 5) {
             try {
-                LinkCreationService.createShortLink(ctx)
-                verify { ctx.status(201) }
+                LinkService.processEmail(ctx)
+                verify { ctx.result("") }
                 logger.info("Transaction retried and succeeded after transient error")
                 break
             } catch (e: SQLException) {

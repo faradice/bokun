@@ -7,26 +7,33 @@ import java.sql.SQLException
 import java.sql.Timestamp
 import java.time.LocalDateTime
 
-
 object LinkDB {
     private val logger = LoggerFactory.getLogger(LinkDB::class.java)
 
-    fun createLink(shortId: String, originalUrl: String, expiration: Timestamp?): Boolean {
-        return try {
-            val query = "INSERT INTO links (shortId, originalUrl, expiration, clickCount) VALUES (?, ?, ?, 0)"
-            getConnection()?.prepareStatement(query)?.use { pstmt ->
-                pstmt.setString(1, shortId)
-                pstmt.setString(2, originalUrl)
-                pstmt.setTimestamp(3, expiration)
-                pstmt.executeUpdate()
+    fun storeLinks(links: List<Link>) {
+        var connection = DatabaseManager.getConnection()
+        try {
+            connection?.use { connection ->
+                connection.autoCommit = false
+                val query = "INSERT INTO links (shortId, originalUrl, expiration, clickCount) VALUES (?, ?, ?, ?)"
+
+                connection.prepareStatement(query).use { pstmt ->
+                    for (link in links) {
+                        pstmt.setString(1, link.shortId)
+                        pstmt.setString(2, link.originalUrl)
+                        pstmt.setTimestamp(3, java.sql.Timestamp.valueOf(link.expiration))
+                        pstmt.setInt(4, link.clickCount)
+                        pstmt.addBatch()
+                    }
+                    pstmt.executeBatch()
+                }
+                connection.commit()
             }
-            logger.info("Created new link: {} -> {} with expiration: {}", shortId, originalUrl, expiration)
-            true
         } catch (e: SQLException) {
-            logger.error("Failed to create link", e)
-            false
+            logger.error("Failed to store link", e)
         }
     }
+
 
     fun getAllLinks(): List<Link> {
         val links = mutableListOf<Link>()
@@ -37,7 +44,8 @@ object LinkDB {
                 pstmt.executeQuery().use { rs ->
                     while (rs.next()) {
                         val expirationTimestamp = rs.getTimestamp("expiration")
-                        val expiration = expirationTimestamp?.toLocalDateTime() ?: LocalDateTime.now().plusDays(30) // Default if null
+                        val expiration = expirationTimestamp?.toLocalDateTime() ?: LocalDateTime.now()
+                            .plusDays(30) // Default if null
 
                         links.add(
                             Link(
@@ -67,7 +75,8 @@ object LinkDB {
                 pstmt.executeQuery().use { rs ->
                     if (rs.next()) {
                         val expirationTimestamp = rs.getTimestamp("expiration")
-                        val expiration = expirationTimestamp?.toLocalDateTime() ?: LocalDateTime.now().plusDays(30) // Default if null
+                        val expiration = expirationTimestamp?.toLocalDateTime() ?: LocalDateTime.now()
+                            .plusDays(30) // Default if null
 
                         link = Link(
                             shortId = rs.getString("shortId"),
@@ -84,5 +93,4 @@ object LinkDB {
 
         return link
     }
-
 }

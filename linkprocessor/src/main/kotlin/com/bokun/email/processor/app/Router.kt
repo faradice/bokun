@@ -1,6 +1,5 @@
 package com.bokun.email.processor.app
 
-import com.bokun.email.processor.services.LinkCreationService
 import com.bokun.email.processor.services.LinkService
 import com.bokun.email.processor.services.RedirectService
 import io.javalin.Javalin
@@ -9,11 +8,10 @@ object Router {
     fun registerRoutes(app: Javalin) {
 
         // post api
-        app.post("/api/links", LinkCreationService::createShortLink)
-        app.get("/api/r/{shortId}", RedirectService::trackAndRedirect)
         app.post("/api/process-email", LinkService::processEmail)
 
         // get api
+        app.get("/api/r/{shortId}", RedirectService::trackAndRedirect)
         app.get("/api/analytics", RedirectService::getClickAnalytics)
 
         app.get("/api/links") { ctx ->

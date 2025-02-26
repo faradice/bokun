@@ -36,7 +36,9 @@ commit]]></console>
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files />
+    <open-files>
+      <object connection-id="14fc1680-54ec-410c-ba2c-2aacc705f329" object-ref="consoles/ProcessedLinks" />
+    </open-files>
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="14fc1680-54ec-410c-ba2c-2aacc705f329" />
