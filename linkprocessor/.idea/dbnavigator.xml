@@ -24,21 +24,19 @@
   </component>
   <component name="DBNavigator.Project.DatabaseConsoleManager">
     <connection id="14fc1680-54ec-410c-ba2c-2aacc705f329">
-      <console name="ProcessedLinks" type="STANDARD" schema="email_processor" session="Main"><![CDATA[select * from links
+      <console name="ProcessedLinks" type="STANDARD" schema="email_processor" session="Main">select * from links
 select * from clicks
 select * from sqlite_sequence
 delete from links
 delete from clicks
-commit]]></console>
+commit</console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
     <last-used-providers />
   </component>
   <component name="DBNavigator.Project.DatabaseFileManager">
-    <open-files>
-      <object connection-id="14fc1680-54ec-410c-ba2c-2aacc705f329" object-ref="consoles/ProcessedLinks" />
-    </open-files>
+    <open-files />
   </component>
   <component name="DBNavigator.Project.DatabaseSessionManager">
     <connection id="14fc1680-54ec-410c-ba2c-2aacc705f329" />

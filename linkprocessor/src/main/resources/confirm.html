@@ -4,18 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Confirm Redirect</title>
-    <script>
-        function confirmRedirect(shortId, originalUrl) {
-            if (confirm("Do you want to proceed to this link?\n\n" + originalUrl)) {
-                window.location.href = "/api/r/" + shortId;
-            } else {
-                window.location.href = "/";
-            }
-        }
-    </script>
 </head>
-<body onload="confirmRedirect('{{shortId}}', '{{originalUrl}}')">
-<h2>Redirecting...</h2>
-<p>If you are not redirected, <a id="redirectLink" href="#">click here</a>.</p>
+<body>
+<h2>Redirect Confirmation</h2>
+<p>You are about to be redirected to:</p>
+<p><b>{{originalUrl}}</b></p>
+<a href="/api/r/{{shortId}}" id="redirectLink">Proceed</a>
+<p><a href="/">Cancel</a></p>
 </body>
 </html>

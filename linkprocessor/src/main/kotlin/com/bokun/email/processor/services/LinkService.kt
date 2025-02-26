@@ -16,29 +16,6 @@ import io.javalin.http.bodyAsClass
 object LinkService {
     private val logger = LoggerFactory.getLogger(LinkService::class.java)
 
-    fun processEmailOLD(ctx: Context) {
-        val emailContent = ctx.body()
-        val linksToStore = mutableListOf<Link>()
-
-        // Replace links in email content and generate shortened links
-        val processedContent = emailContent.replace(Regex("(https?://[\\w./?=]+)")) { match ->
-            val shortId = UUID.randomUUID().toString().substring(0, 8)
-            val link = Link(0, shortId, match.groupValues[1])
-            linksToStore.add(link)
-            "${com.bokun.email.processor.config.ConfigLoader.config.getProperty("server.url")}/api/r/$shortId"
-        }
-
-        // Store all links in batch
-        if (linksToStore.isNotEmpty()) {
-            LinkDB.storeLinks(linksToStore)
-        }
-
-        // Return JSON response so frontend can update correctly
-        ctx.json(mapOf("processedContent" to processedContent))
-
-        logger.info("Processed email content and replaced links.")
-    }
-
     fun processEmail(ctx: Context) {
         val requestBody = ctx.bodyAsClass<Map<String, String>>()
         val emailContent = requestBody["content"] ?: ""
