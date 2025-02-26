@@ -26,8 +26,6 @@
 <h3>Summary</h3>
 <ul>
     <li><b>Total Clicks:</b> {{totalClicks}}</li>
-    <li><b>Expired Links:</b> {{expiredCount}}</li>
-    <li><b>Rate-Limited Links:</b> {{rateLimitedCount}}</li>
 </ul>
 
 <h3>Short Links Click Data</h3>
@@ -38,7 +36,6 @@
         <th>Original URL</th>
         <th>Click Count</th>
         <th>Expiration Status</th>
-        <th>Rate Limit Status</th>
     </tr>
     </thead>
     <tbody>
@@ -46,29 +43,30 @@
     </tbody>
 </table>
 
-<h3>Expired Links</h3>
+<h3>Most Clicked Links</h3>
 <table>
     <thead>
     <tr>
         <th>Short ID</th>
-        <th>Original URL</th>
+        <th>Total Clicks</th>
     </tr>
     </thead>
     <tbody>
-    {{expiredTableRows}}
+    {{mostClickedRows}}
     </tbody>
 </table>
 
-<h3>Rate-Limited Links</h3>
+<h3>Clicks Per Day</h3>
 <table>
     <thead>
     <tr>
         <th>Short ID</th>
-        <th>Original URL</th>
+        <th>Date</th>
+        <th>Clicks</th>
     </tr>
     </thead>
     <tbody>
-    {{rateLimitedTableRows}}
+    {{clicksPerDayRows}}
     </tbody>
 </table>
 </body>

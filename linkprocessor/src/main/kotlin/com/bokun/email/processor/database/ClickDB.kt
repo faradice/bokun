@@ -100,4 +100,30 @@ object ClickDB {
         }
     }
 
+    fun getClicksPerDay(): Map<String, Map<String, Int>> {
+        val analytics = mutableMapOf<String, MutableMap<String, Int>>()
+
+        try {
+            DatabaseManager.getConnection()
+                ?.prepareStatement(
+                    "SELECT shortId, DATE(timestamp / 1000, 'unixepoch') as clickDate, COUNT(*) as clickCount " +
+                            "FROM clicks GROUP BY shortId, clickDate ORDER BY clickDate DESC"
+                )
+                ?.use { pstmt ->
+                    pstmt.executeQuery().use { rs ->
+                        while (rs.next()) {
+                            val shortId = rs.getString("shortId")
+                            val date = rs.getString("clickDate")
+                            val count = rs.getInt("clickCount")
+
+                            analytics.computeIfAbsent(shortId) { mutableMapOf() }[date] = count
+                        }
+                    }
+                }
+            logger.info("Retrieved click counts per day")
+        } catch (e: SQLException) {
+            logger.error("Failed to fetch click counts per day", e)
+        }
+        return analytics
+    }
 }
