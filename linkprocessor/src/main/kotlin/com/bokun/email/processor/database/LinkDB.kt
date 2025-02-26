@@ -4,14 +4,13 @@ import com.bokun.email.processor.database.DatabaseManager.getConnection
 import com.bokun.email.processor.model.Link
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
-import java.sql.Timestamp
 import java.time.LocalDateTime
 
 object LinkDB {
     private val logger = LoggerFactory.getLogger(LinkDB::class.java)
 
     fun storeLinks(links: List<Link>) {
-        var connection = DatabaseManager.getConnection()
+        var connection = getConnection()
         try {
             connection?.use { connection ->
                 connection.autoCommit = false
@@ -34,10 +33,9 @@ object LinkDB {
         }
     }
 
-
     fun getAllLinks(): List<Link> {
         val links = mutableListOf<Link>()
-        val query = "SELECT shortId, originalUrl, expiration, clickCount FROM links"
+        val query = "SELECT id, shortId, originalUrl, expiration, clickCount FROM links"
 
         try {
             getConnection()?.prepareStatement(query)?.use { pstmt ->
@@ -49,6 +47,7 @@ object LinkDB {
 
                         links.add(
                             Link(
+                                id = rs.getInt("id"),
                                 shortId = rs.getString("shortId"),
                                 originalUrl = rs.getString("originalUrl"),
                                 expiration = expiration,
@@ -67,7 +66,7 @@ object LinkDB {
 
     fun getLinkByShortId(shortId: String): Link? {
         var link: Link? = null
-        val query = "SELECT shortId, originalUrl, expiration, clickCount FROM links WHERE shortId = ?"
+        val query = "SELECT id, shortId, originalUrl, expiration, clickCount FROM links WHERE shortId = ?"
 
         try {
             getConnection()?.prepareStatement(query)?.use { pstmt ->
@@ -79,6 +78,7 @@ object LinkDB {
                             .plusDays(30) // Default if null
 
                         link = Link(
+                            id = rs.getInt("id"),
                             shortId = rs.getString("shortId"),
                             originalUrl = rs.getString("originalUrl"),
                             expiration = expiration,

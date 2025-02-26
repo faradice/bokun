@@ -3,6 +3,7 @@ package com.bokun.email.processor.model
 import java.time.LocalDateTime
 
 data class Link(
+    val id: Int,
     val shortId: String,
     val originalUrl: String,
     val expiration: LocalDateTime = LocalDateTime.now().plusDays(10),  // ✅ Default expiration: 30 days
