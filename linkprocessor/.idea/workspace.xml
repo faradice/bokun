@@ -5,20 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/ClickDB.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dbnavigator.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dbnavigator.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/resources/processed_email.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.properties" beforeDir="false" afterPath="$PROJECT_DIR$/config.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/email_processor.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/App.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/App.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/config/ConfigLoader.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/config/ConfigLoader.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/DatabaseManager.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/DatabaseManager.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/LinkDB.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/LinkDB.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/model/Models.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/model/Models.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/confirm.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/confirm.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/email_test_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/email_test_form.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
