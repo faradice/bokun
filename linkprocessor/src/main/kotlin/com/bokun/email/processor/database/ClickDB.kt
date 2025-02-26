@@ -1,5 +1,6 @@
 package com.bokun.email.processor.database
 
+import com.bokun.email.processor.config.ConfigLoader
 import com.bokun.email.processor.model.Click
 import org.slf4j.LoggerFactory
 import java.sql.SQLException
@@ -82,4 +83,21 @@ object ClickDB {
         }
         return analytics
     }
+
+    fun hasExceededRateLimit(shortId: String): Boolean {
+        return try {
+            DatabaseManager.getConnection()?.prepareStatement("SELECT COUNT(*) FROM clicks WHERE shortId = ? AND timestamp > ?")
+                ?.use { pstmt ->
+                    pstmt.setString(1, shortId)
+                    pstmt.setLong(2, System.currentTimeMillis() - 60_000) // Last minute
+                    pstmt.executeQuery().use { rs ->
+                        rs.next() && rs.getInt(1) >= ConfigLoader.config.getProperty("rate.limit", "5").toInt()
+                    }
+                } ?: false
+        } catch (e: SQLException) {
+            logger.error("Failed to check rate limit for {}", shortId, e)
+            false
+        }
+    }
+
 }

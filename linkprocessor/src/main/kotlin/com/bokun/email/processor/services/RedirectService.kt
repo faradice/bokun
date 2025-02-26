@@ -20,10 +20,10 @@ object RedirectService {
         val userAgent = ctx.header("User-Agent") ?: "Unknown"
         val ipAddress = ctx.ip()
 
-        // Rate limiting: Allow only RATE_LIMIT clicks per minute per IP
+        // Rate limiting: Allow only RATE_LIMIT clicks minutes per IP
         val now = LocalDateTime.now()
         val requestTimes = requestTracker.getOrDefault(ipAddress, mutableListOf())
-        requestTimes.removeIf { it.plusMinutes(1).isBefore(now) }
+        requestTimes.removeIf { it.plusMinutes(RATE_LIMIT.toLong()).isBefore(now) }
         if (requestTimes.size >= RATE_LIMIT) {
             logger.warn("Rate limit exceeded for IP: {}", ipAddress)
             ctx.status(429).result("Too many requests. Try again later.")
@@ -50,8 +50,31 @@ object RedirectService {
     }
 
     fun getClickAnalytics(ctx: Context) {
-        val analytics = ClickDB.getGroupOfClickCounts()
-        logger.info("Retrieved click analytics")
-        ctx.json(analytics)
+        val clickData = ClickDB.getGroupOfClickCounts()
+        val linkData = LinkDB.getAllLinks()
+
+        val analyticsTableRows = linkData.joinToString("") { link ->
+            val clickCount = clickData[link.shortId] ?: 0
+            val isExpired = ClickDB.isLinkExpired(link.shortId)
+            val hasExceededRateLimit = ClickDB.hasExceededRateLimit(link.shortId)
+            val expirationStatus = if (isExpired) "<span style='color: red;'>Expired</span>" else "<span style='color: green;'>Active</span>"
+            val rateLimitStatus = if (hasExceededRateLimit) "<span style='color: orange;'>Rate Limit Exceeded</span>" else "<span style='color: green;'>OK</span>"
+
+            """
+            <tr>
+                <td>${link.shortId}</td>
+                <td><a href="/api/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+                <td>${clickCount}</td>
+                <td>${expirationStatus}</td>
+                <td>${rateLimitStatus}</td>
+            </tr>
+            """.trimIndent()
+        }
+
+        val template = this::class.java.getResource("/analytics.html")!!.readText()
+        val analyticsHtml = template.replace("{{analyticsTableRows}}", analyticsTableRows)
+
+        ctx.contentType("text/html").result(analyticsHtml)
     }
+
 }

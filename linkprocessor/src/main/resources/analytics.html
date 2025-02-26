@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Analytics</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+<h2>Click Analytics</h2>
+
+<h3>Short Links Click Data</h3>
+<table>
+    <thead>
+    <tr>
+        <th>Short ID</th>
+        <th>Original URL</th>
+        <th>Click Count</th>
+        <th>Expiration Status</th>
+        <th>Rate Limit Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{analyticsTableRows}}
+    </tbody>
+</table>
+</body>
+</html>
