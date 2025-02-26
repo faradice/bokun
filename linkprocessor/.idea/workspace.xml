@@ -7,7 +7,6 @@
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/email_processor.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -97,7 +96,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.Build linkprocessor.executor": "Run",
-    "Gradle.LinkProcessorTest.executor": "Debug",
+    "Gradle.LinkProcessorTest.executor": "Run",
     "Gradle.LinkProcessorTest.should create short link successfully.executor": "Debug",
     "Gradle.LinkProcessorTest.should handle concurrent requests correctly.executor": "Run",
     "Gradle.LinkProcessorTest.should handle high-load scenarios.executor": "Run",
@@ -108,6 +107,7 @@
     "Gradle.LinkProcessorTest.should retry transaction on transient database failure with exponential backoff.executor": "Run",
     "Gradle.LinkProcessorTest.should return click analytics.executor": "Run",
     "Gradle.LinkProcessorTest.should rollback transaction on database failure.executor": "Run",
+    "Gradle.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded.executor": "Run",
     "Gradle.linkprocessor [buildDependents].executor": "Run",
     "Gradle.linkprocessor [run].executor": "Run",
     "Kotlin.App.executor": "Debug",
@@ -188,30 +188,6 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
-    <configuration name="LinkProcessorTest.should retry transaction on transient database failure with exponential backoff" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;com.bokun.email.processor.LinkProcessorTest.should retry transaction on transient database failure with exponential backoff&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
     <configuration name="LinkProcessorTest.should rollback transaction on database failure" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -236,6 +212,30 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
+      <ExternalSystemSettings>
+        <option name="executionName" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="externalSystemIdString" value="GRADLE" />
+        <option name="scriptParameters" value="" />
+        <option name="taskDescriptions">
+          <list />
+        </option>
+        <option name="taskNames">
+          <list>
+            <option value=":test" />
+            <option value="--tests" />
+            <option value="&quot;com.bokun.email.processor.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded&quot;" />
+          </list>
+        </option>
+        <option name="vmOptions" />
+      </ExternalSystemSettings>
+      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
+      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
+      <DebugAllEnabled>false</DebugAllEnabled>
+      <RunAsTest>true</RunAsTest>
+      <method v="2" />
+    </configuration>
     <configuration name="App" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="com.bokun.email.processor.app.App" />
       <module name="linkprocessor.main" />
@@ -246,10 +246,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Gradle.LinkProcessorTest" />
+        <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded" />
         <item itemvalue="Kotlin.App" />
         <item itemvalue="Gradle.LinkProcessorTest.should rollback transaction on database failure" />
         <item itemvalue="Gradle.LinkProcessorTest.should respect rate limiting" />
-        <item itemvalue="Gradle.LinkProcessorTest.should retry transaction on transient database failure with exponential backoff" />
       </list>
     </recent_temporary>
   </component>
