@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/resources/processed_email.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/email_processor.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/LinkService.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -95,7 +97,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Gradle.Build linkprocessor.executor": "Run",
-    "Gradle.LinkProcessorTest.executor": "Run",
+    "Gradle.LinkProcessorTest.executor": "Debug",
     "Gradle.LinkProcessorTest.should create short link successfully.executor": "Debug",
     "Gradle.LinkProcessorTest.should handle concurrent requests correctly.executor": "Run",
     "Gradle.LinkProcessorTest.should handle high-load scenarios.executor": "Run",
@@ -137,7 +139,7 @@
       <command value="gradle buildDependents" />
     </option>
   </component>
-  <component name="RunManager" selected="Kotlin.App">
+  <component name="RunManager" selected="Gradle.LinkProcessorTest">
     <configuration name="LinkProcessorTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -243,8 +245,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Kotlin.App" />
         <item itemvalue="Gradle.LinkProcessorTest" />
+        <item itemvalue="Kotlin.App" />
         <item itemvalue="Gradle.LinkProcessorTest.should rollback transaction on database failure" />
         <item itemvalue="Gradle.LinkProcessorTest.should respect rate limiting" />
         <item itemvalue="Gradle.LinkProcessorTest.should retry transaction on transient database failure with exponential backoff" />

@@ -20,7 +20,6 @@ object LinkService {
 
         val linksToStore = mutableListOf<Link>()
 
-        // Replace links with shortened versions
         val processedContent = emailContent.replace(Regex("(https?://[\\w./?=]+)")) { match ->
             val shortId = UUID.randomUUID().toString().substring(0, 8)
             val link = Link(0, shortId, match.groupValues[1])
@@ -28,26 +27,12 @@ object LinkService {
             "<a href=\"/api/confirm/$shortId\" target=\"_blank\">${match.groupValues[1]}</a>"
         }
 
-        // Store links in the database
         if (linksToStore.isNotEmpty()) {
             LinkDB.storeLinks(linksToStore)
         }
 
-        // Return HTML email format
-        val formattedEmail = """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Processed Email</title>
-        </head>
-        <body>
-            <h2>Processed Email</h2>
-            <p style="white-space: pre-line;">$processedContent</p>
-        </body>
-        </html>
-    """.trimIndent()
+        val template = this::class.java.getResource("/processed_email.html")!!.readText()
+        val formattedEmail = template.replace("{{processedContent}}", processedContent)
 
         ctx.contentType("text/html").result(formattedEmail)
     }
