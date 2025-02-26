@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/analytics.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/analytics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/email_processor.db" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -79,6 +80,7 @@
         <option value="Kotlin Class" />
         <option value="Class" />
         <option value="Kotlin Object" />
+        <option value="Dockerfile" />
       </list>
     </option>
   </component>
@@ -268,6 +270,7 @@
     <watches-manager>
       <configuration name="JetRunConfigurationType">
         <watch expression="throwable" />
+        <watch expression="plugins {&#10;    kotlin(&quot;jvm&quot;) version &quot;2.1.10&quot;&#10;    id(&quot;application&quot;)&#10;}&#10;&#10;group = &quot;com.bokun.email.processor&quot;&#10;version = &quot;1.0-SNAPSHOT&quot;&#10;&#10;repositories {&#10;    mavenCentral()&#10;}&#10;&#10;dependencies {&#10;    testImplementation(&quot;io.mockk:mockk:1.13.5&quot;)&#10;&#10;    // Javalin for the web framework&#10;    implementation(&quot;io.javalin:javalin:5.6.2&quot;)&#10;&#10;    // SQLite for database storage&#10;    implementation(&quot;org.xerial:sqlite-jdbc:3.42.0.0&quot;)&#10;&#10;    // Exposed ORM for database interaction&#10;    implementation(&quot;org.jetbrains.exposed:exposed-core:0.42.0&quot;)&#10;    implementation(&quot;org.jetbrains.exposed:exposed-dao:0.42.0&quot;)&#10;    implementation(&quot;org.jetbrains.exposed:exposed-jdbc:0.42.0&quot;)&#10;&#10;    // Logging with SLF4J and Logback&#10;    implementation(&quot;org.slf4j:slf4j-api:2.0.9&quot;)&#10;    implementation(&quot;ch.qos.logback:logback-classic:1.4.11&quot;)&#10;&#10;    // Rate limiting&#10;    implementation(&quot;com.github.vladimir-bukhtoyarov:bucket4j-core:7.6.0&quot;)&#10;&#10;    // Monitoring with Prometheus&#10;    implementation(&quot;io.prometheus:simpleclient:0.16.0&quot;)&#10;    implementation(&quot;io.prometheus:simpleclient_hotspot:0.16.0&quot;)&#10;    implementation(&quot;io.prometheus:simpleclient_httpserver:0.16.0&quot;)&#10;&#10;    // Testing dependencies&#10;    testImplementation(&quot;org.junit.jupiter:junit-jupiter:5.9.3&quot;)&#10;    testImplementation(&quot;io.mockk:mockk:1.13.5&quot;)&#10;&#10;    // Jackson for JSON parsing&#10;    implementation(&quot;com.fasterxml.jackson.core:jackson-databind:2.15.2&quot;)&#10;    implementation(&quot;com.fasterxml.jackson.module:jackson-module-kotlin:2.15.2&quot;)&#10;    implementation(&quot;com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2&quot;)&#10;}&#10;&#10;application {&#10;    mainClass.set(&quot;com.bokun.email.processor.app.App&quot;)&#10;}&#10;tasks.test {&#10;    useJUnitPlatform()&#10;}&#10;kotlin {&#10;    jvmToolchain(20)&#10;}&#10;&#10;" />
       </configuration>
     </watches-manager>
   </component>

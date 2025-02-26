@@ -46,6 +46,23 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.15.2")
 }
 
+tasks.register<Jar>("fatJar") {
+    archiveBaseName.set("email-processor")
+    archiveVersion.set("")
+    archiveClassifier.set("")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().map { if (it.isDirectory) it else zipTree(it) }
+    })
+
+    manifest {
+        attributes["Main-Class"] = "com.bokun.email.processor.app.AppKt"
+    }
+}
+
 application {
     mainClass.set("com.bokun.email.processor.app.App")
 }
