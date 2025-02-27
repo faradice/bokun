@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/analytics.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/analytics.html" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -140,7 +140,7 @@
       <command value="gradle buildDependents" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.LinkProcessorTest">
+  <component name="RunManager" selected="Kotlin.App">
     <configuration name="LinkProcessorTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -246,6 +246,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.App" />
         <item itemvalue="Gradle.LinkProcessorTest" />
         <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded" />
         <item itemvalue="Gradle.LinkProcessorTest.should rollback transaction on database failure" />
