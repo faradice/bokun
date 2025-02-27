@@ -32,18 +32,23 @@ The service is deployed and accessible at:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/YOUR-USERNAME/bokun-link-service.git
+   https://github.com/faradice/bokun.git
    cd bokun-link-service
    ```
 2. Build the JAR file:
    ```sh
    ./gradlew clean build fatJar
    ```
-3. Run the service:
+3. Verify that the JAR file was created:
+   ```sh
+   ls build/libs/
+   ```
+   Ensure that **`email-processor.jar`** is inside `build/libs/`.
+4. Run the service:
    ```sh
    java -jar build/libs/email-processor.jar
    ```
-4. Open the email test form in a browser:
+5. Open the email test form in a browser:
    ```sh
    http://localhost:8080/test-email
    ```
@@ -52,15 +57,20 @@ The service is deployed and accessible at:
 
 ### Steps to Build and Run Docker Locally
 
-1. Build the project and generate the JAR file:
+1. **Build the project and generate the JAR file**:
    ```sh
    ./gradlew clean build fatJar
    ```
-2. Build the Docker image:
+2. **Ensure the JAR file exists**:
+   ```sh
+   ls build/libs/
+   ```
+   Confirm that **`email-processor.jar`** is present before proceeding.
+3. **Build the Docker image**:
    ```sh
    docker build -t email-processor .
    ```
-3. Run the container:
+4. **Run the container**:
    ```sh
    docker run -p 8080:8080 email-processor
    ```
@@ -71,10 +81,10 @@ You can also pull and run the **pre-built Docker image** from Docker Hub:
 
 ```sh
 # Pull the latest version
- docker pull YOUR_DOCKERHUB_USERNAME/email-processor:latest
+ docker pull raggithor/email-processor:latest
 
 # Run the container
- docker run -p 8080:8080 YOUR_DOCKERHUB_USERNAME/email-processor
+ docker run -p 8080:8080 raggithor/email-processor
 ```
 
 ## API Endpoints
@@ -136,4 +146,3 @@ By following these steps, the Email Link Processor will efficiently handle large
 - **Advanced Security**: Detect malicious or automated clicks.
 - **Scalability Enhancements**: Support for distributed databases.
 - **Extended Dashboard Features**: Additional visualization tools for deeper insights.
-
