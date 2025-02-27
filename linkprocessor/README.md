@@ -16,8 +16,8 @@ The **Bókun Link Service** processes outbound email links for Bókun, transform
 ## Live Deployment
 
 The service is deployed and accessible at:
-- **Email Test Form:** [http://159.65.51.158/test-email](http://159.65.51.158/test-email)
-- **Analytics Dashboard:** [http://159.65.51.158/analytics](http://159.65.51.158/analytics)
+- **Email Test Form:** [http://206.189.245.178/test-email](http://206.189.245.178/test-email)
+- **Analytics Dashboard:** [http://206.189.245.178/analytics](http://206.189.245.178/analytics)
 
 ## How to Run Locally
 
@@ -26,21 +26,22 @@ The service is deployed and accessible at:
 - **JDK 20** or later
 - **Gradle**
 - **SQLite**
+- **Docker (if running in a container)**
 
-### Steps
+### Steps to Build and Run Locally
 
 1. Clone the repository:
    ```sh
    git clone https://github.com/YOUR-USERNAME/bokun-link-service.git
    cd bokun-link-service
    ```
-2. Build the project:
+2. Build the JAR file:
    ```sh
-   ./gradlew build
+   ./gradlew clean build fatJar
    ```
 3. Run the service:
    ```sh
-   ./gradlew run
+   java -jar build/libs/email-processor.jar
    ```
 4. Open the email test form in a browser:
    ```sh
@@ -49,20 +50,32 @@ The service is deployed and accessible at:
 
 ## Running with Docker
 
-### Steps
+### Steps to Build and Run Docker Locally
 
-1. Build the Docker image:
+1. Build the project and generate the JAR file:
+   ```sh
+   ./gradlew clean build fatJar
+   ```
+2. Build the Docker image:
    ```sh
    docker build -t email-processor .
    ```
-2. Run the container:
+3. Run the container:
    ```sh
-   docker compose up -d
+   docker run -p 8080:8080 email-processor
    ```
-3. Access the service at:
-   ```sh
-   http://localhost:8080/test-email
-   ```
+
+### Running from Public Docker Image
+
+You can also pull and run the **pre-built Docker image** from Docker Hub:
+
+```sh
+# Pull the latest version
+ docker pull YOUR_DOCKERHUB_USERNAME/email-processor:latest
+
+# Run the container
+ docker run -p 8080:8080 YOUR_DOCKERHUB_USERNAME/email-processor
+```
 
 ## API Endpoints
 
@@ -93,27 +106,27 @@ The service is deployed and accessible at:
 To scale this service effectively for Bókun’s outbound email processing, we recommend the following steps:
 
 1. **Deploy on Kubernetes**
-    - Use **auto-scaling (HPA)** based on request load.
-    - Run multiple replicas of the service behind a load balancer.
+   - Use **auto-scaling (HPA)** based on request load.
+   - Run multiple replicas of the service behind a load balancer.
 
 2. **Use a Distributed Database**
-    - Migrate from SQLite to **PostgreSQL or MySQL** for multi-instance support.
-    - Use **Redis** for caching frequent queries.
+   - Migrate from SQLite to **PostgreSQL or MySQL** for multi-instance support.
+   - Use **Redis** for caching frequent queries.
 
 3. **Optimize Performance**
-    - Enable **connection pooling** for database access.
-    - Implement **background job processing** for analytics.
-    - Compress database logs to reduce storage costs.
+   - Enable **connection pooling** for database access.
+   - Implement **background job processing** for analytics.
+   - Compress database logs to reduce storage costs.
 
 4. **Enhance Security**
-    - Implement **API authentication** for link creation.
-    - Add **encryption** for stored URLs.
-    - Implement **bot detection** to prevent spam clicks.
+   - Implement **API authentication** for link creation.
+   - Add **encryption** for stored URLs.
+   - Implement **bot detection** to prevent spam clicks.
 
 5. **Improve Monitoring & Alerting**
-    - Use **Grafana dashboards** for real-time observability.
-    - Configure **Alertmanager thresholds** for proactive issue resolution.
-    - Implement **distributed tracing** with OpenTelemetry.
+   - Use **Grafana dashboards** for real-time observability.
+   - Configure **Alertmanager thresholds** for proactive issue resolution.
+   - Implement **distributed tracing** with OpenTelemetry.
 
 By following these steps, the Email Link Processor will efficiently handle large-scale email tracking at Bókun without compromising performance or security.
 
@@ -123,5 +136,4 @@ By following these steps, the Email Link Processor will efficiently handle large
 - **Advanced Security**: Detect malicious or automated clicks.
 - **Scalability Enhancements**: Support for distributed databases.
 - **Extended Dashboard Features**: Additional visualization tools for deeper insights.
-
 
