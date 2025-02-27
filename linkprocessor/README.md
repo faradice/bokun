@@ -32,7 +32,7 @@ The service is deployed and accessible at:
 
 1. Clone the repository:
    ```sh
-   https://github.com/faradice/bokun.git
+   git@github.com:faradice/bokun.git
    cd bokun-link-service
    ```
 2. Build the JAR file:
