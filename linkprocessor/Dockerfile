@@ -1,13 +1,16 @@
-# Amazon Corretto JDK 20 for Kotlin 2.1.10 compatibility
+# Use Amazon Corretto JDK 20 for Kotlin 2.1.10 compatibility
 FROM amazoncorretto:20
 
 # Set working directory
 WORKDIR /app
 
-# Copy build files
+# Install SQLite (needed for database operations)
+RUN yum install -y sqlite
+
+# Copy the fat JAR
 COPY build/libs/email-processor.jar app.jar
 
-# Expose the port (ensure it matches your config)
+# Expose the port
 EXPOSE 8080
 
 # Run the application

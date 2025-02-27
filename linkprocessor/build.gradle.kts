@@ -59,16 +59,24 @@ tasks.register<Jar>("fatJar") {
     })
 
     manifest {
-        attributes["Main-Class"] = "com.bokun.email.processor.app.AppKt"
+        attributes["Main-Class"] = "com.bokun.email.processor.app.App"
     }
 }
 
 application {
     mainClass.set("com.bokun.email.processor.app.App")
 }
+
 tasks.test {
     useJUnitPlatform()
 }
+
+tasks.withType<Jar> {
+    manifest {
+        attributes["Main-Class"] = "com.bokun.email.processor.app.App"
+    }
+}
+
 kotlin {
     jvmToolchain(20)
 }
