@@ -101,4 +101,44 @@ object LinkDB {
             logger.error("Failed to update click count for {}", shortId, e)
         }
     }
+
+    fun retrieveOriginalUrl(shortId: String): String? {
+        return try {
+            DatabaseManager.getConnection()?.prepareStatement("SELECT originalUrl FROM links WHERE shortId = ?")
+                ?.use { pstmt ->
+                    pstmt.setString(1, shortId)
+                    pstmt.executeQuery().use { rs ->
+                        if (rs.next()) {
+                            rs.getString("originalUrl")
+                        } else {
+                            null
+                        }
+
+                    }
+                }
+        } catch (e: SQLException) {
+            logger.error("Failed to retrieve original URL for {}", shortId, e)
+            null
+        }
+    }
+
+    fun isLinkExpired(shortId: String): Boolean {
+        return try {
+            DatabaseManager.getConnection()?.prepareStatement("SELECT expiration FROM links WHERE shortId = ?")
+                ?.use { pstmt ->
+                    pstmt.setString(1, shortId)
+                    pstmt.executeQuery().use { rs ->
+                        if (rs.next()) {
+                            val expirationMillis = rs.getLong("expiration")
+                            expirationMillis < System.currentTimeMillis() // Compare against current time in millis
+                        } else {
+                            false
+                        }
+                    }
+                } ?: false
+        } catch (e: SQLException) {
+            logger.error("Failed to check expiration for {}", shortId, e)
+            false
+        }
+    }
 }

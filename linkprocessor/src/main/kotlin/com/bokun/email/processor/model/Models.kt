@@ -14,8 +14,3 @@ data class Click(
     val ipAddress: String,
     val timestamp: Long
 )
-
-data class LinkRequest(
-    val originalUrl: String,
-    val expiration: String?
-)

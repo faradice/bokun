@@ -3,49 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Click Analytics</title>
+    <title>Analytics Dashboard</title>
     <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f4f4f4; }
+        .expired { color: red; }
+        .active { color: green; }
+        .rate-limit { color: orange; }
     </style>
 </head>
 <body>
-<h2>Click Analytics</h2>
 
-<h3>Summary</h3>
-<ul>
-    <li><b>Total Clicks:</b> {{totalClicks}}</li>
-    <li><b>Expired Links:</b> {{expiredCount}}</li>
-    <li><b>Rate-Limited Links:</b> {{rateLimitedCount}}</li>
-</ul>
+<h1>Email Link Click Analytics</h1>
 
-<h3>Short Links Click Data</h3>
-<table>
-    <thead>
-    <tr>
-        <th>Short ID</th>
-        <th>Original URL</th>
-        <th>Click Count</th>
-        <th>Expiration Status</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{analyticsTableRows}}
-    </tbody>
-</table>
+<h2>Summary</h2>
+<p><b>Total Clicks:</b> {{totalClicks}}</p>
+<p><b>Expired Links:</b> {{expiredCount}}</p>
+<p><b>Rate Limit Exceeded:</b> {{rateLimitedCount}}</p>
 
-<h3>Most Clicked Links</h3>
+<h2>Most Clicked Links</h2>
 <table>
     <thead>
     <tr>
@@ -58,7 +36,7 @@
     </tbody>
 </table>
 
-<h3>Clicks Per Day</h3>
+<h2>Clicks Per Day</h2>
 <table>
     <thead>
     <tr>
@@ -71,5 +49,49 @@
     {{clicksPerDayRows}}
     </tbody>
 </table>
+
+<h2>Hourly Click Trends</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Short ID</th>
+        <th>Hour</th>
+        <th>Clicks</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{hourlyTrendsRows}}
+    </tbody>
+</table>
+
+<h2>Most Frequent Visitors</h2>
+<table>
+    <thead>
+    <tr>
+        <th>IP Address</th>
+        <th>Click Count</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{frequentVisitorsRows}}
+    </tbody>
+</table>
+
+<h2>Detailed Link Analytics</h2>
+<table>
+    <thead>
+    <tr>
+        <th>Short ID</th>
+        <th>Original URL</th>
+        <th>Total Clicks</th>
+        <th>Expiration Status</th>
+        <th>Rate Limit Status</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{analyticsTableRows}}
+    </tbody>
+</table>
+
 </body>
 </html>

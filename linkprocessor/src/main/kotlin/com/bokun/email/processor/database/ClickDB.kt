@@ -25,46 +25,6 @@ object ClickDB {
         }
     }
 
-    fun isLinkExpired(shortId: String): Boolean {
-        return try {
-            DatabaseManager.getConnection()?.prepareStatement("SELECT expiration FROM links WHERE shortId = ?")
-                ?.use { pstmt ->
-                    pstmt.setString(1, shortId)
-                    pstmt.executeQuery().use { rs ->
-                        if (rs.next()) {
-                            val expirationMillis = rs.getLong("expiration")
-                            expirationMillis < System.currentTimeMillis() // Compare against current time in millis
-                        } else {
-                            false
-                        }
-                    }
-                } ?: false
-        } catch (e: SQLException) {
-            logger.error("Failed to check expiration for {}", shortId, e)
-            false
-        }
-    }
-
-    fun retrieveOriginalUrl(shortId: String): String? {
-        return try {
-            DatabaseManager.getConnection()?.prepareStatement("SELECT originalUrl FROM links WHERE shortId = ?")
-                ?.use { pstmt ->
-                    pstmt.setString(1, shortId)
-                    pstmt.executeQuery().use { rs ->
-                        if (rs.next()) {
-                            rs.getString("originalUrl")
-                        } else {
-                            null
-                        }
-
-                    }
-                }
-        } catch (e: SQLException) {
-            logger.error("Failed to retrieve original URL for {}", shortId, e)
-            null
-        }
-    }
-
     fun getGroupOfClickCounts(): Map<String, Int> {
         val analytics = mutableMapOf<String, Int>()
         try {
@@ -126,4 +86,64 @@ object ClickDB {
         }
         return analytics
     }
+
+    fun getUniqueVisitorsPerLink(): Map<String, Int> {
+        val visitors = mutableMapOf<String, Int>()
+        try {
+            DatabaseManager.getConnection()?.prepareStatement(
+                "SELECT shortId, COUNT(DISTINCT ipAddress) as visitorCount FROM clicks GROUP BY shortId"
+            )?.use { pstmt ->
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        visitors[rs.getString("shortId")] = rs.getInt("visitorCount")
+                    }
+                }
+            }
+        } catch (e: SQLException) {
+            logger.error("Failed to fetch unique visitors", e)
+        }
+        return visitors
+    }
+
+    fun getClicksPerHour(): Map<String, Map<String, Int>> {
+        val clicksPerHour = mutableMapOf<String, MutableMap<String, Int>>()
+        try {
+            DatabaseManager.getConnection()?.prepareStatement(
+                "SELECT shortId, strftime('%H', timestamp / 1000, 'unixepoch') as hour, COUNT(*) as clickCount " +
+                        "FROM clicks GROUP BY shortId, hour"
+            )?.use { pstmt ->
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        val shortId = rs.getString("shortId")
+                        val hour = rs.getString("hour")
+                        val count = rs.getInt("clickCount")
+
+                        clicksPerHour.computeIfAbsent(shortId) { mutableMapOf() }[hour] = count
+                    }
+                }
+            }
+        } catch (e: SQLException) {
+            logger.error("Failed to fetch hourly clicks", e)
+        }
+        return clicksPerHour
+    }
+
+    fun getFrequentVisitors(): List<Pair<String, Int>> {
+        val visitors = mutableListOf<Pair<String, Int>>()
+        try {
+            DatabaseManager.getConnection()?.prepareStatement(
+                "SELECT ipAddress, COUNT(*) as clickCount FROM clicks GROUP BY ipAddress ORDER BY clickCount DESC"
+            )?.use { pstmt ->
+                pstmt.executeQuery().use { rs ->
+                    while (rs.next()) {
+                        visitors.add(rs.getString("ipAddress") to rs.getInt("clickCount"))
+                    }
+                }
+            }
+        } catch (e: SQLException) {
+            logger.error("Failed to fetch frequent visitors", e)
+        }
+        return visitors
+    }
+
 }

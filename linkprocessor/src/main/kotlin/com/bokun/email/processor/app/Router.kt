@@ -1,14 +1,14 @@
 package com.bokun.email.processor.app
 
 import com.bokun.email.processor.services.LinkService
-import com.bokun.email.processor.services.RedirectService
+import com.bokun.email.processor.services.TrackingService
 import io.javalin.Javalin
 
 object Router {
     fun registerRoutes(app: Javalin) {
 
         // API Endpoints
-        app.get("/api/r/{shortId}", RedirectService::trackAndRedirect)
+        app.get("/api/r/{shortId}", TrackingService::trackAndRedirect)
         app.get("/api/links") { ctx ->
             ctx.contentType("application/json").result(LinkService.getAllLinksJson())
         }
@@ -28,7 +28,7 @@ object Router {
 
         // User-Facing Pages
         app.post("/process-email", LinkService::processEmail)
-        app.get("/analytics", RedirectService::getClickAnalytics)
+        app.get("/analytics", TrackingService::getClickAnalytics)
         app.get("/test-email") { ctx ->
             ctx.contentType("text/html").result(this::class.java.getResource("/email_test_form.html")!!.readText())
         }

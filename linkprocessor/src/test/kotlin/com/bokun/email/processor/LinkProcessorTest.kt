@@ -4,7 +4,7 @@ import com.bokun.email.processor.app.Router
 import com.bokun.email.processor.database.ClickDB
 import com.bokun.email.processor.database.LinkDB
 import com.bokun.email.processor.services.LinkService
-import com.bokun.email.processor.services.RedirectService
+import com.bokun.email.processor.services.TrackingService
 import io.javalin.Javalin
 import io.javalin.http.Context
 import io.javalin.http.bodyAsClass
@@ -60,14 +60,14 @@ class LinkProcessorTest {
         every { ctx.redirect(any()) } returns Unit
 
         mockkObject(ClickDB)
-        every { ClickDB.retrieveOriginalUrl(shortId) } returns "https://example.com"
-        every { ClickDB.isLinkExpired(shortId) } returns false
-        every { ClickDB.storeClick(any()) } just Runs
-
         mockkObject(LinkDB)
+
+        every { LinkDB.retrieveOriginalUrl(shortId) } returns "https://example.com"
+        every { LinkDB.isLinkExpired(shortId) } returns false
+        every { ClickDB.storeClick(any()) } just Runs
         every { LinkDB.incrementClickCount(shortId) } just Runs
 
-        RedirectService.trackAndRedirect(ctx)
+        TrackingService.trackAndRedirect(ctx)
 
         verify { ClickDB.storeClick(any()) }
         verify { LinkDB.incrementClickCount(shortId) }
@@ -78,9 +78,11 @@ class LinkProcessorTest {
         val shortId = "expired123"
 
         mockkObject(ClickDB)
-        every { ClickDB.isLinkExpired(shortId) } returns true
+        mockkObject(LinkDB)
 
-        val result = ClickDB.isLinkExpired(shortId)
+        every { LinkDB.isLinkExpired(shortId) } returns true
+
+        val result = LinkDB.isLinkExpired(shortId)
 
         assertTrue(result, "Expected the link to be expired.")
     }
@@ -90,9 +92,11 @@ class LinkProcessorTest {
         val shortId = "active123"
 
         mockkObject(ClickDB)
-        every { ClickDB.isLinkExpired(shortId) } returns false
+        mockkObject(LinkDB)
 
-        val result = ClickDB.isLinkExpired(shortId)
+        every { LinkDB.isLinkExpired(shortId) } returns false
+
+        val result = LinkDB.isLinkExpired(shortId)
 
         assertFalse(result, "Expected the link to be active.")
     }
@@ -102,9 +106,11 @@ class LinkProcessorTest {
         val shortId = "doesnotexist"
 
         mockkObject(ClickDB)
-        every { ClickDB.retrieveOriginalUrl(shortId) } returns null
+        mockkObject(LinkDB)
 
-        val result = ClickDB.retrieveOriginalUrl(shortId)
+        every { LinkDB.retrieveOriginalUrl(shortId) } returns null
+
+        val result = LinkDB.retrieveOriginalUrl(shortId)
 
         assertNull(result, "Expected null for a nonexistent link.")
     }
@@ -123,15 +129,16 @@ class LinkProcessorTest {
         every { ctx.result(any<String>()) } returns ctx  // ✅ Fix: Returns ctx instead of just Runs
 
         mockkObject(ClickDB)
-        every { ClickDB.retrieveOriginalUrl(shortId) } returns "https://example.com"
-        every { ClickDB.isLinkExpired(shortId) } returns false
+        mockkObject(LinkDB)
+
+        every { LinkDB.retrieveOriginalUrl(shortId) } returns "https://example.com"
+        every { LinkDB.isLinkExpired(shortId) } returns false
         every { ClickDB.storeClick(any()) } just Runs
 
-        mockkObject(LinkDB)
-        every { LinkDB.incrementClickCount(shortId) } just Runs
+         every { LinkDB.incrementClickCount(shortId) } just Runs
 
         // Simulate multiple rapid requests from the same IP
-        repeat(6) { RedirectService.trackAndRedirect(ctx) } // Exceed RATE_LIMIT (assumed to be 5)
+        repeat(6) { TrackingService.trackAndRedirect(ctx) } // Exceed RATE_LIMIT (assumed to be 5)
 
         // Verify that the 429 status was set
         verify { ctx.status(429) }
