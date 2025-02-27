@@ -6,14 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/data/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/email_processor.db" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/Router.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/app/Router.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/ClickDB.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/ClickDB.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/LinkDB.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/database/LinkDB.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/model/Models.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/model/Models.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/RedirectService.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/kotlin/com/bokun/email/processor/services/TrackingService.kt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/analytics.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/analytics.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -147,7 +141,7 @@
       <command value="gradle buildDependents" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.LinkProcessorTest">
+  <component name="RunManager" selected="Kotlin.AppKt">
     <configuration name="LinkProcessorTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -253,8 +247,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Gradle.LinkProcessorTest" />
         <item itemvalue="Kotlin.AppKt" />
+        <item itemvalue="Gradle.LinkProcessorTest" />
         <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded" />
         <item itemvalue="Gradle.LinkProcessorTest.should rollback transaction on database failure" />
         <item itemvalue="Gradle.LinkProcessorTest.should respect rate limiting" />
