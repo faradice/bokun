@@ -1,50 +1,119 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Test Form</title>
+    <style>
+        /* Fancy Link Styles */
+        #processedEmail a {
+            color: #2563EB; /* Tailwind's blue-600 */
+            text-decoration: underline;
+            transition: color 0.3s ease-in-out;
+        }
+        #processedEmail a:visited {
+            color: #9333EA; /* Tailwind's purple-600 */
+        }
+        #processedEmail a:hover {
+            color: #1D4ED8; /* Darker blue */
+        }
+
+        /* Smooth Fade-In Effect */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loader Animation */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3498db;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
-<body>
-<h2>Email Processor Test</h2>
-<form id="emailForm">
-    <label for="emailContent">Email Content:</label><br>
-    <textarea id="emailContent" rows="12" cols="100">
-        Hello,
+<body class="bg-gradient-to-r from-blue-50 to-purple-100 text-gray-800">
+<div class="max-w-3xl mx-auto p-8 bg-white shadow-2xl rounded-2xl mt-12 fade-in">
+    <h2 class="text-3xl font-extrabold text-center text-blue-700">📧 Email Processor Test</h2>
 
-        Here are a few links:
-        1. https://mbl.is
-        2. https://google.com
-        3. https://dv.is
+    <!-- Email Form -->
+    <form id="emailForm" class="mt-6">
+        <label for="emailContent" class="block font-semibold text-gray-700">✏️ Email Content:</label>
+        <textarea id="emailContent" rows="10"
+                  class="w-full border rounded-lg p-3 mt-2 focus:ring-4 focus:ring-blue-400 min-h-[150px] transition-shadow duration-300"></textarea>
 
-        All the best,
-        Test User
-    </textarea>
-    <br><br>
-    <button type="button" onclick="sendEmail()">Send Email</button>
-</form>
+        <button type="button" onclick="sendEmail()" id="sendButton"
+                class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105 flex items-center gap-2">
+            🚀 Send Email
+        </button>
+    </form>
 
-<br>
-<div id="processedEmail" style="border: 1px solid #ccc;margin: 1;"></div>
+    <!-- Processed Email Display (Hidden Initially) -->
+    <div id="processedEmailContainer" class="hidden">
+        <h2 class="text-lg font-bold mt-6">📜 Processed Email</h2>
+        <div id="processedEmail"
+             class="border rounded-lg p-4 bg-gray-50 min-h-[80px] text-sm leading-relaxed shadow-md">
+        </div>
+    </div>
 
-<h2>Shortened Links</h2>
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Short ID</th>
-        <th>Expiration</th>
-        <th>Click Count</th>
-        <th>Original URL</th>
-    </tr>
-    </thead>
-    <tbody id="linksTable">
-    </tbody>
-</table>
+    <!-- Shortened Links Table -->
+    <h2 class="text-lg font-bold mt-6">🔗 Shortened Links</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full border-collapse border border-gray-300 mt-2 bg-white shadow-lg rounded-lg">
+            <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <tr>
+                <th class="p-3">ID</th>
+                <th class="p-3">Short ID</th>
+                <th class="p-3">Expiration</th>
+                <th class="p-3">Click Count</th>
+                <th class="p-3">Original URL</th>
+            </tr>
+            </thead>
+            <tbody id="linksTable" class="divide-y divide-gray-200">
+            </tbody>
+        </table>
+    </div>
+</div>
 
 <script>
+    // Default email content
+    const defaultEmailContent = `Hello,
+
+Here are a few links:
+1. https://mbl.is
+2. https://google.com
+3. https://dv.is
+
+Best,
+Test User`;
+
+    // Set the default email content when the page loads
+    document.addEventListener("DOMContentLoaded", () => {
+        document.getElementById("emailContent").value = defaultEmailContent;
+        fetchLinks(); // Fetch stored links on page load
+    });
+
     function sendEmail() {
         const emailContent = document.getElementById("emailContent").value;
+        const sendButton = document.getElementById("sendButton");
+
+        // Show Loading Indicator
+        sendButton.innerHTML = `<span class="loader"></span> Processing...`;
+        sendButton.disabled = true;
+
         fetch("/process-email", {
             method: "POST",
             headers: {
@@ -52,12 +121,29 @@
             },
             body: JSON.stringify({ content: emailContent })
         })
-        .then(response => response.text())
+        .then(response => response.text())  // Expect HTML instead of JSON
         .then(html => {
-            document.getElementById("processedEmail").innerHTML = html;
+            const processedEmailContainer = document.getElementById("processedEmailContainer");
+            const processedEmail = document.getElementById("processedEmail");
+
+            // Fix UTF-8 encoding issue
+            processedEmail.innerHTML = new TextDecoder("utf-8").decode(new TextEncoder().encode(html));
+
+            // Show the processed email box only if content exists
+            if (html.trim()) {
+                processedEmailContainer.classList.remove("hidden");
+            } else {
+                processedEmailContainer.classList.add("hidden");
+            }
+
             fetchLinks(); // Refresh links table after storing a new link
         })
-        .catch(error => alert("Error processing email: " + error));
+        .catch(error => alert("Error processing email: " + error))
+        .finally(() => {
+            // Restore Button State
+            sendButton.innerHTML = "🚀 Send Email";
+            sendButton.disabled = false;
+        });
     }
 
     function fetchLinks() {
@@ -67,27 +153,25 @@
             const tableBody = document.getElementById("linksTable");
             tableBody.innerHTML = ""; // Clear existing data
             data.forEach(link => {
-                // Convert expiration timestamp (milliseconds) to formatted date
-                const expirationDate = link.expiration && !isNaN(link.expiration)
-                    ? new Date(Number(link.expiration)).toLocaleDateString("en-GB", {
-                        day: "2-digit", month: "short", year: "numeric"
-                      })
-                    : 'N/A';
-
-                const row = `<tr>
-                    <td>${link.id}</td>
-                    <td>${link.shortId}</td>
-                    <td>${expirationDate}</td>
-                    <td>${link.clickCount}</td>
-                    <td><a href="/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+                const expirationDate = link.expiration ? new Date(link.expiration).toLocaleString() : 'N/A';
+                const row = `<tr class="hover:bg-gray-100 transition duration-300">
+                    <td class="p-3 border">${link.id}</td>
+                    <td class="p-3 border">${link.shortId}</td>
+                    <td class="p-3 border">${expirationDate}</td>
+                    <td class="p-3 border">${link.clickCount}</td>
+                    <td class="p-3 border">
+                        <a href="/confirm/${link.shortId}" target="_blank"
+                            class="text-blue-600 underline hover:text-blue-800 visited:text-purple-600">
+                            ${link.originalUrl}
+                        </a>
+                    </td>
                 </tr>`;
                 tableBody.innerHTML += row;
-           });
-      }).catch(error => console.error("Error fetching links:", error));
+            });
+        })
+        .catch(error => console.error("Error fetching links:", error));
     }
-
-    // Fetch links when the page loads
-    window.onload = fetchLinks;
 </script>
+
 </body>
 </html>
