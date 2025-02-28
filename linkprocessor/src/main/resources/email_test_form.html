@@ -8,45 +8,42 @@
     <style>
         /* Fancy Link Styles */
         #processedEmail a {
-            color: #2563EB; /* Tailwind's blue-600 */
+            color: #2563EB;
             text-decoration: underline;
             transition: color 0.3s ease-in-out;
+            cursor: pointer;
         }
         #processedEmail a:visited {
-            color: #9333EA; /* Tailwind's purple-600 */
+            color: #9333EA;
         }
         #processedEmail a:hover {
-            color: #1D4ED8; /* Darker blue */
+            color: #1D4ED8;
         }
 
-        /* Smooth Fade-In Effect */
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Loader Animation */
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #3498db;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 <body class="bg-gradient-to-r from-blue-50 to-purple-100 text-gray-800">
-<div class="max-w-3xl mx-auto p-8 bg-white shadow-2xl rounded-2xl mt-12 fade-in">
+<div class="max-w-3xl mx-auto p-8 bg-white shadow-2xl rounded-2xl mt-12">
     <h2 class="text-3xl font-extrabold text-center text-blue-700">📧 Email Processor Test</h2>
 
     <!-- Email Form -->
@@ -61,7 +58,7 @@
         </button>
     </form>
 
-    <!-- Processed Email Display (Hidden Initially) -->
+    <!-- Processed Email Display -->
     <div id="processedEmailContainer" class="hidden">
         <h2 class="text-lg font-bold mt-6">📜 Processed Email</h2>
         <div id="processedEmail"
@@ -88,62 +85,57 @@
     </div>
 </div>
 
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="modal hidden">
+    <div class="modal-content w-96 p-6">
+        <h2 class="text-xl font-bold text-gray-800">🚦 Redirect Confirmation</h2>
+        <p class="mt-4 text-gray-600">You are about to be redirected to:</p>
+        <p id="originalUrlText" class="mt-2 font-semibold text-blue-600 break-words"></p>
+
+        <div class="mt-6 flex justify-center gap-4">
+            <button id="confirmRedirect" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
+                ✅ Proceed
+            </button>
+            <button onclick="closeModal()" class="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded-lg">
+                ❌ Cancel
+            </button>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Default email content
-    const defaultEmailContent = `Hello,
-
-Here are a few links:
-1. https://mbl.is
-2. https://google.com
-3. https://dv.is
-
-Best,
-Test User`;
-
-    // Set the default email content when the page loads
     document.addEventListener("DOMContentLoaded", () => {
-        document.getElementById("emailContent").value = defaultEmailContent;
-        fetchLinks(); // Fetch stored links on page load
+        document.getElementById("emailContent").value = `Hello,\n\nHere are a few links:\n1. https://mbl.is\n2. https://google.com\n3. https://dv.is\n\nBest,\nTest User`;
+
+        fetchLinks();
     });
 
     function sendEmail() {
         const emailContent = document.getElementById("emailContent").value;
-        const sendButton = document.getElementById("sendButton");
-
-        // Show Loading Indicator
-        sendButton.innerHTML = `<span class="loader"></span> Processing...`;
-        sendButton.disabled = true;
-
         fetch("/process-email", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ content: emailContent })
         })
-        .then(response => response.text())  // Expect HTML instead of JSON
+        .then(response => response.text())
         .then(html => {
-            const processedEmailContainer = document.getElementById("processedEmailContainer");
-            const processedEmail = document.getElementById("processedEmail");
+            let parser = new DOMParser();
+            let doc = parser.parseFromString(html, "text/html");
 
-            // Fix UTF-8 encoding issue
-            processedEmail.innerHTML = new TextDecoder("utf-8").decode(new TextEncoder().encode(html));
+            let emailContentFormatted = doc.body.innerHTML.replace(/\n/g, "<br>");
 
-            // Show the processed email box only if content exists
-            if (html.trim()) {
-                processedEmailContainer.classList.remove("hidden");
-            } else {
-                processedEmailContainer.classList.add("hidden");
-            }
+            doc.querySelectorAll("a").forEach(link => {
+                let shortId = link.getAttribute("data-shortid");
+                if (shortId) {
+                    link.setAttribute("href", "#");
+                    link.classList.add("shortened-link");
+                }
+            });
 
-            fetchLinks(); // Refresh links table after storing a new link
+            document.getElementById("processedEmail").innerHTML = emailContentFormatted;
+            document.getElementById("processedEmailContainer").classList.remove("hidden");
         })
-        .catch(error => alert("Error processing email: " + error))
-        .finally(() => {
-            // Restore Button State
-            sendButton.innerHTML = "🚀 Send Email";
-            sendButton.disabled = false;
-        });
+        .catch(error => alert("Error processing email: " + error));
     }
 
     function fetchLinks() {
@@ -151,25 +143,50 @@ Test User`;
         .then(response => response.json())
         .then(data => {
             const tableBody = document.getElementById("linksTable");
-            tableBody.innerHTML = ""; // Clear existing data
+            tableBody.innerHTML = "";
             data.forEach(link => {
-                const expirationDate = link.expiration ? new Date(link.expiration).toLocaleString() : 'N/A';
                 const row = `<tr class="hover:bg-gray-100 transition duration-300">
                     <td class="p-3 border">${link.id}</td>
                     <td class="p-3 border">${link.shortId}</td>
-                    <td class="p-3 border">${expirationDate}</td>
+                    <td class="p-3 border">${new Date(link.expiration).toLocaleString()}</td>
                     <td class="p-3 border">${link.clickCount}</td>
                     <td class="p-3 border">
-                        <a href="/confirm/${link.shortId}" target="_blank"
-                            class="text-blue-600 underline hover:text-blue-800 visited:text-purple-600">
+                        <a href="#" class="shortened-link" data-shortid="${link.shortId}">
                             ${link.originalUrl}
                         </a>
                     </td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
-        })
-        .catch(error => console.error("Error fetching links:", error));
+        });
+    }
+
+    // ✅ Intercept all shortened links (Table + Processed Email)
+    document.addEventListener("click", function(event) {
+        let target = event.target.closest(".shortened-link");
+        if (target && target.dataset.shortid) {
+            event.preventDefault();
+            let shortId = target.dataset.shortid;
+            let originalUrl = `/api/r/${shortId}`;
+
+            showModal(event, shortId, originalUrl);
+        }
+    });
+
+     function showModal(event, shortId, originalUrl) {
+        event.preventDefault();
+        document.getElementById("originalUrlText").textContent = originalUrl;
+
+        document.getElementById("confirmRedirect").onclick = () => {
+            window.open(originalUrl, "_blank"); // Opens the redirected page in a new tab
+            closeModal(); // Hides the confirmation modal
+        };
+
+        document.getElementById("confirmModal").style.display = "flex";
+    }
+
+    function closeModal() {
+        document.getElementById("confirmModal").style.display = "none";
     }
 </script>
 

@@ -24,7 +24,7 @@ object LinkService {
             val shortId = UUID.randomUUID().toString().substring(0, 8)
             val link = Link(0, shortId, match.groupValues[1])
             linksToStore.add(link)
-            "<a href=\"/confirm/$shortId\" target=\"_blank\">${match.groupValues[1]}</a>"
+            "<a href=\"#\" class=\"shortened-link\" data-shortid=\"$shortId\">${match.groupValues[1]}</a>"
         }
 
         if (linksToStore.isNotEmpty()) {
