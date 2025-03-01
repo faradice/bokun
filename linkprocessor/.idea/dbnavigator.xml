@@ -26,13 +26,10 @@
     <connection id="14fc1680-54ec-410c-ba2c-2aacc705f329">
       <console name="ProcessedLinks" type="STANDARD" schema="email_processor" session="Main"><![CDATA[select * from links
 select * from clicks
-select * from sqlite_sequence
-delete from links
 delete from clicks
-
-drop table links
-drop table clicks
-commit]]></console>
+delete from links
+commit
+rollback]]></console>
     </connection>
   </component>
   <component name="DBNavigator.Project.DatabaseEditorStateManager">
@@ -74,7 +71,7 @@ commit]]></console>
           <tns-folder value="" />
           <tns-profile value="" />
           <files>
-            <file path="$PROJECT_DIR$/email_processor.db" schema="email_processor" />
+            <file path="$PROJECT_DIR$/data/email_processor.db" schema="email_processor" />
           </files>
           <type value="NONE" />
           <user value="" />

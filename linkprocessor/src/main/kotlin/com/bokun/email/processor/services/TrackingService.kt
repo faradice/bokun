@@ -1,35 +1,24 @@
 package com.bokun.email.processor.services
 
-import com.bokun.email.processor.config.ConfigLoader
 import com.bokun.email.processor.database.ClickDB
 import com.bokun.email.processor.database.LinkDB
 import com.bokun.email.processor.model.Click
 import io.javalin.http.Context
 import org.slf4j.LoggerFactory
-import java.time.LocalDateTime
-import java.util.concurrent.ConcurrentHashMap
 
 object TrackingService {
     private val logger = LoggerFactory.getLogger(TrackingService::class.java)
-    private val requestTracker = ConcurrentHashMap<String, MutableList<LocalDateTime>>()
-    private val RATE_LIMIT = ConfigLoader.config.getProperty("rate.limit", "5").toInt()
 
     fun trackAndRedirect(ctx: Context) {
         val shortId = ctx.pathParam("shortId")
         val userAgent = ctx.header("User-Agent") ?: "Unknown"
         val ipAddress = ctx.ip()
 
-        // Rate limiting: Allow only RATE_LIMIT clicks minutes per IP
-        val now = LocalDateTime.now()
-        val requestTimes = requestTracker.getOrDefault(ipAddress, mutableListOf())
-        requestTimes.removeIf { it.plusMinutes(RATE_LIMIT.toLong()).isBefore(now) }
-        if (requestTimes.size >= RATE_LIMIT) {
+        if (ClickDB.isRateLimited(shortId, ipAddress)) {
             logger.warn("Rate limit exceeded for IP: {}", ipAddress)
             ctx.status(429).result("Too many requests. Try again later.")
             return
         }
-        requestTimes.add(now)
-        requestTracker[ipAddress] = requestTimes
 
         val originalUrl = LinkDB.retrieveOriginalUrl(shortId)
         if (originalUrl != null) {
@@ -38,8 +27,9 @@ object TrackingService {
                 ctx.status(410).result("This link has expired.")
                 return
             }
-            ClickDB.storeClick(Click(shortId, userAgent, ipAddress, System.currentTimeMillis()))
-            LinkDB.incrementClickCount(shortId)
+
+            LinkDB.processClickTransaction(Click(shortId, userAgent, ipAddress, System.currentTimeMillis()))
+
             logger.info("Redirecting {} to {}", shortId, originalUrl)
             ctx.redirect(originalUrl)
         } else {
@@ -80,7 +70,11 @@ object TrackingService {
             """
         <tr>
             <td>${link.shortId}</td>
-            <td><a href="/confirm/${link.shortId}" target="_blank">${link.originalUrl}</a></td>
+            <td>
+                <a href="#" class="shortened-link" data-shortid="${link.shortId}">
+                    ${link.originalUrl}
+                </a>
+            </td>
             <td>${clickCount}</td>
             <td>${visitorCount}</td>
             <td>${expirationStatus}</td>
@@ -129,5 +123,4 @@ object TrackingService {
 
         ctx.contentType("text/html").result(analyticsHtml)
     }
-
 }

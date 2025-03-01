@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Test Form</title>
     <style>
-        /* Ensure links have the correct default color */
         #linksTable a,
         #processedEmail a {
-            color: #2563EB !important; /* Tailwind's blue-600 (Fixes inherited colors) */
+            color: #2563EB !important; /* Tailwind's blue-600 */
             text-decoration: underline;
             transition: color 0.2s ease-in-out;
         }
@@ -17,7 +16,7 @@
         /* Hover Effect: Turn links into a brighter blue */
         #linksTable a:hover,
         #processedEmail a:hover {
-            color: #1D4ED8 !important; /* Tailwind's blue-700 for hover effect */
+            color: #003399 !important;
         }
 
         /* Modal Styles */
@@ -62,14 +61,27 @@
     <div id="processedEmailContainer" class="hidden mt-3">
         <h2 class="text-lg font-bold mb-2">📜 Processed Email</h2>
         <div id="processedEmail"
-             class="border rounded-lg p-2 bg-gray-50 min-h-[50px] text-sm leading-snug shadow-md">
+             class="border rounded-lg p-2 bg-gray-50 min-h-[50px] text-sm leading-snug shadow-md whitespace-pre-line">
         </div>
     </div>
 
     <!-- Shortened Links Table -->
-    <h2 class="text-lg font-bold mt-6">🔗 Shortened Links</h2>
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse border border-gray-300 mt-2 bg-white shadow-lg rounded-lg" id="linksTable">
+    <div class="flex items-center mt-6">
+        <div class="relative group mr-3">
+            <button onclick="refreshTable()" id="refreshButton"
+                    class="bg-blue-500 hover:bg-blue-600 text-white p-2 rounded-full transition-transform duration-200 transform hover:scale-105">
+                🔄
+            </button>
+            <span class="absolute left-1/2 -translate-x-1/2 -top-10 bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                Refresh Table
+            </span>
+        </div>
+        <h2 class="text-lg font-bold">Shortened Links</h2>
+        <span id="loadingIndicator" class="hidden text-blue-600 font-semibold ml-4">⏳ Refreshing...</span>
+    </div>
+
+    <div class="overflow-x-auto mt-2">
+        <table class="w-full border-collapse border border-gray-300 bg-white shadow-lg rounded-lg" id="linksTable">
             <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <tr>
                 <th class="p-3">ID</th>
@@ -79,8 +91,7 @@
                 <th class="p-3">Original URL</th>
             </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200">
-            </tbody>
+            <tbody class="divide-y divide-gray-200"></tbody>
         </table>
     </div>
 </div>
@@ -104,6 +115,8 @@
 </div>
 
 <script>
+    let currentShortId = "";
+
     document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("emailContent").value = `Hello,\n\nHere are a few links:\n1. https://mbl.is\n2. https://google.com\n3. https://dv.is\n\nBest,\nTest User`;
 
@@ -112,6 +125,8 @@
 
     function sendEmail() {
         const emailContent = document.getElementById("emailContent").value;
+        document.getElementById("loadingIndicator").classList.remove("hidden");
+
         fetch("/process-email", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -122,88 +137,126 @@
             let parser = new DOMParser();
             let doc = parser.parseFromString(html, "text/html");
 
-            let emailContentFormatted = doc.body.innerHTML
-                .trim()
-                .replace(/^\s*<br\s*\/?>/g, "")
-                .replace(/\n\s*\n/g, "<br>")
-                .replace(/\n/g, "<br>");
-
             doc.querySelectorAll("a").forEach(link => {
-                let hrefValue = link.getAttribute("href");
+                const href = link.getAttribute("href");
+                if (href.startsWith("/api/r/")) {
+                    const shortId = href.split("/").pop();
 
-                let match = hrefValue.match(/\/api\/r\/(.+)/);
-                if (match) {
-                    let shortId = match[1];
-                    link.classList.add("shortened-link");
+                    link.setAttribute("href", "#");
+                    link.setAttribute("class", "shortened-link");
                     link.setAttribute("data-shortid", shortId);
-                    link.setAttribute("href", `/api/r/${shortId}`);
+
+                    fetch(`/api/link/${shortId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.originalUrl) {
+                                link.setAttribute("data-originalurl", data.originalUrl);
+                            } else {
+                                link.setAttribute("data-originalurl", "Unknown URL");
+                            }
+                        })
+                        .catch(error => {
+                            console.error("Error fetching original URL for:", shortId, error);
+                            link.setAttribute("data-originalurl", "Unknown URL"); // Fallback
+                        });
                 }
             });
 
-            document.getElementById("processedEmail").innerHTML = emailContentFormatted;
+            // Convert modified HTML back to string
+            let cleanedHtml = doc.body.innerHTML
+                .replace(/^\s*<br\s*\/?>/gi, '')
+                .replace(/(<br\s*\/?>\s*){3,}/gi, '<br><br>');
+
+            document.getElementById("processedEmail").innerHTML = cleanedHtml.trim();
             document.getElementById("processedEmailContainer").classList.remove("hidden");
+
+            setTimeout(rebindLinkEvents, 1000);
+            refreshTable();
         })
         .catch(error => alert("Error processing email: " + error));
     }
 
-    function fetchLinks() {
+        function refreshTable() {
+        document.getElementById("loadingIndicator").classList.remove("hidden");
+        fetchLinks();
+    }
+
+     function fetchLinks() {
         fetch("/api/links")
         .then(response => response.json())
         .then(data => {
             const tableBody = document.querySelector("#linksTable tbody");
             tableBody.innerHTML = "";
+
             data.forEach(link => {
+                console.log("Fetched Link:", link);
+
                 const row = `<tr class="hover:bg-gray-100 transition duration-300">
                     <td class="p-3 border">${link.id}</td>
                     <td class="p-3 border">${link.shortId}</td>
                     <td class="p-3 border">${new Date(link.expiration).toLocaleString()}</td>
                     <td class="p-3 border">${link.clickCount}</td>
                     <td class="p-3 border">
-                        <a href="/api/r/${link.shortId}" class="shortened-link" data-shortid="${link.shortId}">
-                            ${link.originalUrl}
+                        <a href="#" class="shortened-link"
+                            data-shortid="${link.shortId}"
+                            data-originalurl="${link.originalUrl || ''}">
+                            ${link.originalUrl || 'Unknown URL'}
                         </a>
                     </td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
+
+            rebindLinkEvents();
         });
     }
 
-    document.addEventListener("click", function(event) {
-        let target = event.target.closest("a.shortened-link");
-        if (target && target.dataset.shortid) {
-            event.preventDefault();
-            let shortId = target.dataset.shortid;
-            let originalUrl = `/api/r/${shortId}`;
+    function rebindLinkEvents() {
+        document.querySelectorAll(".shortened-link").forEach(link => {
+            link.onclick = function(event) {
+                event.preventDefault();
 
-            showModal(event, shortId, originalUrl);
-        }
-    });
+                currentShortId = this.dataset.shortid;
+                currentOriginalUrl = this.getAttribute("data-originalurl");
 
-     function showModal(event, shortId, originalUrl) {
-        event.preventDefault();
+                console.log("Clicked link - Short ID:", currentShortId);
+                console.log("Clicked link - Original URL:", currentOriginalUrl);
 
-        // Fetch the original URL from the API
-        fetch(`/api/link/${shortId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data && data.originalUrl) {
-                    document.getElementById("originalUrlText").textContent = data.originalUrl; // ✅ Display the real redirect link
+                if (currentShortId && currentOriginalUrl && currentOriginalUrl !== "Unknown URL") {
+                    showConfirmationModal();
                 } else {
-                    document.getElementById("originalUrlText").textContent = "⚠️ Original URL not found";
+                    console.warn("Original URL missing, retrying fetch...");
+                    fetch(`/api/link/${currentShortId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.originalUrl) {
+                                currentOriginalUrl = data.originalUrl;
+                                showConfirmationModal();
+                            } else {
+                                console.warn("Original URL still missing.");
+                            }
+                        })
+                        .catch(error => console.error("Error fetching original URL:", error));
                 }
-            })
-            .catch(error => {
-                document.getElementById("originalUrlText").textContent = "⚠️ Error fetching URL";
-                console.error("Error fetching original URL:", error);
-            });
+            };
+        });
+    }
+
+     function showConfirmationModal() {
+        console.log("Current Original URL Before Modal:", currentOriginalUrl);
+
+        if (!currentOriginalUrl || currentOriginalUrl === "undefined") {
+            console.warn("Original URL is missing! Using fallback.");
+            currentOriginalUrl = "Unknown URL";
+        }
+
+        document.getElementById("originalUrlText").textContent = currentOriginalUrl;
+        document.getElementById("confirmModal").style.display = "flex";
 
         document.getElementById("confirmRedirect").onclick = () => {
-            window.open(originalUrl, "_blank");
+            window.open(`/api/r/${currentShortId}`, "_blank");
             closeModal();
         };
-
-        document.getElementById("confirmModal").style.display = "flex";
     }
 
     function closeModal() {

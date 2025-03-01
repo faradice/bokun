@@ -14,7 +14,14 @@ object DatabaseManager {
         reconnectDatabase()
     }
 
-    fun reconnectDatabase() {
+    fun getConnection(): Connection? {
+        if (connection == null || connection!!.isClosed) {
+           reconnectDatabase()
+        }
+        return connection
+    }
+
+    private fun reconnectDatabase() {
         try {
             connection?.close()
             connection = DriverManager.getConnection(ConfigLoader.config.getProperty("database.url"))
@@ -28,10 +35,4 @@ object DatabaseManager {
         }
     }
 
-    fun getConnection(): Connection? {
-        if (connection == null || connection!!.isClosed) {
-            connection = DriverManager.getConnection("jdbc:sqlite:email_processor.db")
-        }
-        return connection
-    }
 }

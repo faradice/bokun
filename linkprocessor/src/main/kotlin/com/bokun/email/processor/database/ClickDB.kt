@@ -7,7 +7,10 @@ import java.sql.SQLException
 
 object ClickDB {
     private val logger = LoggerFactory.getLogger(ClickDB::class.java)
+    private val RATE_LIMIT = ConfigLoader.config.getProperty("rate.limit.minutes", "5").toInt()
+    private val DURATION = ConfigLoader.config.getProperty("rate.limit.duration", "60").toInt() * 1000
 
+    @Deprecated("This func is obsolete and will be removed")
     fun storeClick(clickEvent: Click) {
         try {
             DatabaseManager.getConnection()
@@ -146,4 +149,23 @@ object ClickDB {
         return visitors
     }
 
+    fun isRateLimited(shortId: String, ipAddress: String): Boolean {
+        return try {
+             val cutoffTime = System.currentTimeMillis() - DURATION
+
+            DatabaseManager.getConnection()?.prepareStatement(
+                "SELECT COUNT(*) FROM clicks WHERE shortId = ? AND ipAddress = ? AND timestamp > ?"
+            )?.use { pstmt ->
+                pstmt.setString(1, shortId)
+                pstmt.setString(2, ipAddress)
+                pstmt.setLong(3, cutoffTime)
+                pstmt.executeQuery().use { rs ->
+                    rs.next() && rs.getInt(1) >= RATE_LIMIT
+                }
+            } ?: false
+        } catch (e: SQLException) {
+            logger.error("Failed to check rate limit for {}", ipAddress, e)
+            false
+        }
+    }
 }

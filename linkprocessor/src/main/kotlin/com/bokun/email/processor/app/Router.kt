@@ -23,9 +23,6 @@ object Router {
             }
         }
 
-        // Confirmation Page
-        app.get("/confirm/{shortId}", LinkService::getConfirmationPage)
-
         // User-Facing Pages
         app.post("/process-email", LinkService::processEmail)
         app.get("/analytics", TrackingService::getClickAnalytics)

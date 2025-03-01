@@ -11,13 +11,13 @@ The **Bókun Link Service** processes outbound email links for Bókun, transform
 - **Expiration Handling**: Links automatically expire after a set period.
 - **Rate Limiting**: Prevents excessive requests from the same IP.
 - **Analytics Dashboard**: Provides insights into click activity, most-clicked links, and traffic trends.
-- **Docker Support**: Easily deployable as a containerized service.
+- **Docker Multi-Arch Support**: Runs on **both Linux AMD64 & ARM64 (Mac M1/M2).**
 
 ## Live Deployment
 
 The service is deployed and accessible at:
-- **Email Test Form:** [http://206.189.245.178/test-email](http://206.189.245.178/test-email)
-- **Analytics Dashboard:** [http://206.189.245.178/analytics](http://206.189.245.178/analytics)
+- **Email Test Form:** [http://206.189.245.178:8080/test-email](http://206.189.245.178:8080/test-email)
+- **Analytics Dashboard:** [http://206.189.245.178:8080/analytics](http://206.189.245.178:8080/analytics)
 
 ## How to Run Locally
 
@@ -32,7 +32,7 @@ The service is deployed and accessible at:
 
 1. Clone the repository:
    ```sh
-   git@github.com:faradice/bokun.git
+   git clone git@github.com:faradice/bokun.git
    cd bokun-link-service
    ```
 2. Build the JAR file:
@@ -53,55 +53,61 @@ The service is deployed and accessible at:
    http://localhost:8080/test-email
    ```
 
+---
+
 ## Running with Docker
 
-### Steps to Build and Run Docker Locally
+### **Building and Running Multi-Arch Docker Images (Linux AMD64 & ARM64)**
 
-1. **Build the project and generate the JAR file**:
+To support **both Intel (AMD64) and Mac M1/M2 (ARM64)** platforms, use **Docker Buildx**.
+
+### **Steps to Build and Run Locally with Multi-Platform Support**
+1. **Ensure Docker Buildx is enabled:**
+   ```sh
+   docker buildx create --use
+   ```
+2. **Build the multi-architecture image:**
    ```sh
    ./gradlew clean build fatJar
+   docker buildx build --platform linux/amd64,linux/arm64 -t raggithor/email-processor:latest --push .
    ```
-2. **Ensure the JAR file exists**:
+3. **Pull and run the correct image for your platform:**
    ```sh
-   ls build/libs/
-   ```
-   Confirm that **`email-processor.jar`** is present before proceeding.
-3. **Build the Docker image**:
-   ```sh
-   docker build -t email-processor .
-   ```
-4. **Run the container**:
-   ```sh
-   docker run -p 8080:8080 email-processor
+   docker pull raggithor/email-processor:latest
+   docker run -p 8080:8080 raggithor/email-processor
    ```
 
-### Running from Public Docker Image
+🚀 **Docker will automatically select the correct architecture for your system!**
 
+---
+
+### **Running from Public Docker Image**
 You can also pull and run the **pre-built Docker image** from Docker Hub:
 
 ```sh
 # Pull the latest version
- docker pull raggithor/email-processor:latest
+docker pull raggithor/email-processor:latest
 
 # Run the container
- docker run -p 8080:8080 raggithor/email-processor
+docker run -p 8080:8080 raggithor/email-processor
 ```
+
+---
 
 ## API Endpoints
 
-### Link Processing
-
+### **Link Processing**
 - `POST /process-email` - Replaces links in email content with trackable URLs.
 
-### Redirection & Confirmation
-
+### **Redirection & Confirmation**
 - `GET /r/{shortId}` - Redirects a user to the original URL after logging the click.
 - `GET /confirm/{shortId}` - Displays a confirmation page before redirection.
 
-### Analytics
-
+### **Analytics**
 - `GET /analytics` - Displays a dashboard of click statistics.
 - `GET /links` - Returns all stored links and their metadata.
+
+---
 
 ## Analytics Features
 
@@ -111,34 +117,38 @@ You can also pull and run the **pre-built Docker image** from Docker Hub:
 - **Most Frequent Visitors**: Lists the most active IP addresses.
 - **Expiration & Rate-Limited Links**: Highlights expired and restricted links.
 
+---
+
 ## How to Ensure Smooth Scaling at Bókun?
 
 To scale this service effectively for Bókun’s outbound email processing, we recommend the following steps:
 
-1. **Deploy on Kubernetes**
-   - Use **auto-scaling (HPA)** based on request load.
-   - Run multiple replicas of the service behind a load balancer.
+### **1. Deploy on Kubernetes**
+- Use **auto-scaling (HPA)** based on request load.
+- Run multiple replicas of the service behind a load balancer.
 
-2. **Use a Distributed Database**
-   - Migrate from SQLite to **PostgreSQL or MySQL** for multi-instance support.
-   - Use **Redis** for caching frequent queries.
+### **2. Use a Distributed Database**
+- Migrate from SQLite to **PostgreSQL or MySQL** for multi-instance support.
+- Use **Redis** for caching frequent queries.
 
-3. **Optimize Performance**
-   - Enable **connection pooling** for database access.
-   - Implement **background job processing** for analytics.
-   - Compress database logs to reduce storage costs.
+### **3. Optimize Performance**
+- Enable **connection pooling** for database access.
+- Implement **background job processing** for analytics.
+- Compress database logs to reduce storage costs.
 
-4. **Enhance Security**
-   - Implement **API authentication** for link creation.
-   - Add **encryption** for stored URLs.
-   - Implement **bot detection** to prevent spam clicks.
+### **4. Enhance Security**
+- Implement **API authentication** for link creation.
+- Add **encryption** for stored URLs.
+- Implement **bot detection** to prevent spam clicks.
 
-5. **Improve Monitoring & Alerting**
-   - Use **Grafana dashboards** for real-time observability.
-   - Configure **Alertmanager thresholds** for proactive issue resolution.
-   - Implement **distributed tracing** with OpenTelemetry.
+### **5. Improve Monitoring & Alerting**
+- Use **Grafana dashboards** for real-time observability.
+- Configure **Alertmanager thresholds** for proactive issue resolution.
+- Implement **distributed tracing** with OpenTelemetry.
 
 By following these steps, the Email Link Processor will efficiently handle large-scale email tracking at Bókun without compromising performance or security.
+
+---
 
 ## Future Improvements
 
@@ -146,3 +156,4 @@ By following these steps, the Email Link Processor will efficiently handle large
 - **Advanced Security**: Detect malicious or automated clicks.
 - **Scalability Enhancements**: Support for distributed databases.
 - **Extended Dashboard Features**: Additional visualization tools for deeper insights.
+```

@@ -1,98 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://cdn.tailwindcss.com"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Dashboard</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        .expired { color: red; }
-        .active { color: green; }
-        .rate-limit { color: orange; }
+        /* Styling for links */
+        table a,
+        #processedEmail a {
+            color: #2563EB !important; /* Tailwind's blue-600 */
+            text-decoration: underline;
+            transition: color 0.2s ease-in-out;
+        }
+
+        /* Hover Effect: Stronger Blue */
+        table a:hover,
+        #processedEmail a:hover {
+            color: #003399 !important; /* Deep blue */
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 10;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
     </style>
 </head>
-<body>
+<body class="bg-gradient-to-r from-blue-50 to-purple-100 text-gray-800">
 
-<h1>Email Link Click Analytics</h1>
+<div class="max-w-5xl mx-auto p-8 bg-white shadow-2xl rounded-2xl mt-12">
+    <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-6">📊 Email Link Click Analytics</h1>
 
-<h2>Summary</h2>
-<p><b>Total Clicks:</b> {{totalClicks}}</p>
-<p><b>Expired Links:</b> {{expiredCount}}</p>
-<p><b>Rate Limit Exceeded:</b> {{rateLimitedCount}}</p>
+    <!-- Summary Section -->
+    <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+        <h2 class="text-2xl font-bold text-gray-800">📌 Summary</h2>
+        <p class="mt-2"><b>Total Clicks:</b> <span class="text-blue-600">{{totalClicks}}</span></p>
+        <p><b>Expired Links:</b> <span class="text-red-600">{{expiredCount}}</span></p>
+        <p><b>Rate Limit Exceeded:</b> <span class="text-orange-500">{{rateLimitedCount}}</span></p>
+    </div>
 
-<h2>Most Clicked Links</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Short ID</th>
-        <th>Total Clicks</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{mostClickedRows}}
-    </tbody>
-</table>
+    <!-- Most Clicked Links -->
+    <h2 class="text-2xl font-bold mt-8 text-gray-800">🔥 Most Clicked Links</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full border border-gray-300 mt-2 bg-white shadow-md rounded-lg" id="linksTable">
+            <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <tr>
+                <th class="p-3">Short ID</th>
+                <th class="p-3">Total Clicks</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            {{mostClickedRows}}
+            </tbody>
+        </table>
+    </div>
 
-<h2>Clicks Per Day</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Short ID</th>
-        <th>Date</th>
-        <th>Clicks</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{clicksPerDayRows}}
-    </tbody>
-</table>
+    <!-- Detailed Link Analytics -->
+    <h2 class="text-2xl font-bold mt-8 text-gray-800">📊 Detailed Link Analytics</h2>
+    <div class="overflow-x-auto">
+        <table class="w-full border border-gray-300 mt-2 bg-white shadow-md rounded-lg">
+            <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <tr>
+                <th class="p-3">Short ID</th>
+                <th class="p-3">Original URL</th>
+                <th class="p-3">Total Clicks</th>
+                <th class="p-3">Expiration Status</th>
+                <th class="p-3">Visitor Count</th>
+                <th class="p-3">Rate Limit Status</th>
+            </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+            {{analyticsTableRows}}
+            </tbody>
+        </table>
+    </div>
+</div>
 
-<h2>Hourly Click Trends</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Short ID</th>
-        <th>Hour</th>
-        <th>Clicks</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{hourlyTrendsRows}}
-    </tbody>
-</table>
+<!-- Confirmation Modal -->
+<div id="confirmModal" class="modal hidden">
+    <div class="modal-content w-96 p-6">
+        <h2 class="text-xl font-bold text-gray-800">🚦 Redirect Confirmation</h2>
+        <p class="mt-4 text-gray-600">You are about to be redirected to:</p>
+        <p id="originalUrlText" class="mt-2 font-semibold text-blue-600 break-words"></p>
 
-<h2>Most Frequent Visitors</h2>
-<table>
-    <thead>
-    <tr>
-        <th>IP Address</th>
-        <th>Click Count</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{frequentVisitorsRows}}
-    </tbody>
-</table>
+        <div class="mt-6 flex justify-center gap-4">
+            <button id="confirmRedirect" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
+                ✅ Proceed
+            </button>
+            <button onclick="closeModal()" class="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded-lg">
+                ❌ Cancel
+            </button>
+        </div>
+    </div>
+</div>
 
-<h2>Detailed Link Analytics</h2>
-<table>
-    <thead>
-    <tr>
-        <th>Short ID</th>
-        <th>Original URL</th>
-        <th>Total Clicks</th>
-        <th>Expiration Status</th>
-        <th>Visitor count</th>
-        <th>Rate Limit Status</th>
-    </tr>
-    </thead>
-    <tbody>
-    {{analyticsTableRows}}
-    </tbody>
-</table>
+<script>
+    document.addEventListener("click", function(event) {
+        let target = event.target.closest("a.shortened-link");
+        if (target && target.dataset.shortid) {
+            event.preventDefault();
+            let shortId = target.dataset.shortid;
+
+            // Fetch the original URL dynamically
+            fetch(`/api/link/${shortId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.originalUrl) {
+                        document.getElementById("originalUrlText").textContent = data.originalUrl;
+                        document.getElementById("confirmRedirect").onclick = () => {
+                            window.open(data.originalUrl, "_blank"); // Opens in new tab only when confirmed
+                            closeModal();
+                        };
+                    } else {
+                        document.getElementById("originalUrlText").textContent = "⚠️ Original URL not found";
+                    }
+                });
+
+            document.getElementById("confirmModal").style.display = "flex";
+        }
+    });
+
+    function closeModal() {
+        document.getElementById("confirmModal").style.display = "none";
+    }
+</script>
 
 </body>
 </html>

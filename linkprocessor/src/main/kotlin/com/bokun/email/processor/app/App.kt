@@ -11,7 +11,6 @@ object App {
     @JvmStatic
     fun main(args: Array<String>) {
         ConfigLoader.loadConfig()
-        DatabaseManager.initializeDatabase()
         val port = ConfigLoader.config.getProperty("server.port", "8080").toInt()
         val app = Javalin.create().start(port)
         Router.registerRoutes(app)
