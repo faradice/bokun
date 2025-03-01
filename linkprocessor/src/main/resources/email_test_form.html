@@ -6,18 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Email Test Form</title>
     <style>
-        /* Fancy Link Styles */
+        /* Ensure links have the correct default color */
+        #linksTable a,
         #processedEmail a {
-            color: #2563EB;
+            color: #2563EB !important; /* Tailwind's blue-600 (Fixes inherited colors) */
             text-decoration: underline;
-            transition: color 0.3s ease-in-out;
-            cursor: pointer;
+            transition: color 0.2s ease-in-out;
         }
-        #processedEmail a:visited {
-            color: #9333EA;
-        }
+
+        /* Hover Effect: Turn links into a brighter blue */
+        #linksTable a:hover,
         #processedEmail a:hover {
-            color: #1D4ED8;
+            color: #1D4ED8 !important; /* Tailwind's blue-700 for hover effect */
         }
 
         /* Modal Styles */
@@ -59,17 +59,17 @@
     </form>
 
     <!-- Processed Email Display -->
-    <div id="processedEmailContainer" class="hidden">
-        <h2 class="text-lg font-bold mt-6">📜 Processed Email</h2>
+    <div id="processedEmailContainer" class="hidden mt-3">
+        <h2 class="text-lg font-bold mb-2">📜 Processed Email</h2>
         <div id="processedEmail"
-             class="border rounded-lg p-4 bg-gray-50 min-h-[80px] text-sm leading-relaxed shadow-md">
+             class="border rounded-lg p-2 bg-gray-50 min-h-[50px] text-sm leading-snug shadow-md">
         </div>
     </div>
 
     <!-- Shortened Links Table -->
     <h2 class="text-lg font-bold mt-6">🔗 Shortened Links</h2>
     <div class="overflow-x-auto">
-        <table class="w-full border-collapse border border-gray-300 mt-2 bg-white shadow-lg rounded-lg">
+        <table class="w-full border-collapse border border-gray-300 mt-2 bg-white shadow-lg rounded-lg" id="linksTable">
             <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
             <tr>
                 <th class="p-3">ID</th>
@@ -79,7 +79,7 @@
                 <th class="p-3">Original URL</th>
             </tr>
             </thead>
-            <tbody id="linksTable" class="divide-y divide-gray-200">
+            <tbody class="divide-y divide-gray-200">
             </tbody>
         </table>
     </div>
@@ -122,13 +122,21 @@
             let parser = new DOMParser();
             let doc = parser.parseFromString(html, "text/html");
 
-            let emailContentFormatted = doc.body.innerHTML.replace(/\n/g, "<br>");
+            let emailContentFormatted = doc.body.innerHTML
+                .trim()
+                .replace(/^\s*<br\s*\/?>/g, "")
+                .replace(/\n\s*\n/g, "<br>")
+                .replace(/\n/g, "<br>");
 
             doc.querySelectorAll("a").forEach(link => {
-                let shortId = link.getAttribute("data-shortid");
-                if (shortId) {
-                    link.setAttribute("href", "#");
+                let hrefValue = link.getAttribute("href");
+
+                let match = hrefValue.match(/\/api\/r\/(.+)/);
+                if (match) {
+                    let shortId = match[1];
                     link.classList.add("shortened-link");
+                    link.setAttribute("data-shortid", shortId);
+                    link.setAttribute("href", `/api/r/${shortId}`);
                 }
             });
 
@@ -142,7 +150,7 @@
         fetch("/api/links")
         .then(response => response.json())
         .then(data => {
-            const tableBody = document.getElementById("linksTable");
+            const tableBody = document.querySelector("#linksTable tbody");
             tableBody.innerHTML = "";
             data.forEach(link => {
                 const row = `<tr class="hover:bg-gray-100 transition duration-300">
@@ -151,7 +159,7 @@
                     <td class="p-3 border">${new Date(link.expiration).toLocaleString()}</td>
                     <td class="p-3 border">${link.clickCount}</td>
                     <td class="p-3 border">
-                        <a href="#" class="shortened-link" data-shortid="${link.shortId}">
+                        <a href="/api/r/${link.shortId}" class="shortened-link" data-shortid="${link.shortId}">
                             ${link.originalUrl}
                         </a>
                     </td>
@@ -161,9 +169,8 @@
         });
     }
 
-    // ✅ Intercept all shortened links (Table + Processed Email)
     document.addEventListener("click", function(event) {
-        let target = event.target.closest(".shortened-link");
+        let target = event.target.closest("a.shortened-link");
         if (target && target.dataset.shortid) {
             event.preventDefault();
             let shortId = target.dataset.shortid;
@@ -175,11 +182,25 @@
 
      function showModal(event, shortId, originalUrl) {
         event.preventDefault();
-        document.getElementById("originalUrlText").textContent = originalUrl;
+
+        // Fetch the original URL from the API
+        fetch(`/api/link/${shortId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.originalUrl) {
+                    document.getElementById("originalUrlText").textContent = data.originalUrl; // ✅ Display the real redirect link
+                } else {
+                    document.getElementById("originalUrlText").textContent = "⚠️ Original URL not found";
+                }
+            })
+            .catch(error => {
+                document.getElementById("originalUrlText").textContent = "⚠️ Error fetching URL";
+                console.error("Error fetching original URL:", error);
+            });
 
         document.getElementById("confirmRedirect").onclick = () => {
-            window.open(originalUrl, "_blank"); // Opens the redirected page in a new tab
-            closeModal(); // Hides the confirmation modal
+            window.open(originalUrl, "_blank");
+            closeModal();
         };
 
         document.getElementById("confirmModal").style.display = "flex";
