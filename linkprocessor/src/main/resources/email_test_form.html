@@ -181,7 +181,9 @@
         fetchLinks();
     }
 
-     function fetchLinks() {
+    function fetchLinks() {
+        document.getElementById("loadingIndicator").classList.remove("hidden"); // ✅ Show refresh indicator
+
         fetch("/api/links")
         .then(response => response.json())
         .then(data => {
@@ -189,25 +191,25 @@
             tableBody.innerHTML = "";
 
             data.forEach(link => {
-                console.log("Fetched Link:", link);
-
                 const row = `<tr class="hover:bg-gray-100 transition duration-300">
                     <td class="p-3 border">${link.id}</td>
                     <td class="p-3 border">${link.shortId}</td>
                     <td class="p-3 border">${new Date(link.expiration).toLocaleString()}</td>
                     <td class="p-3 border">${link.clickCount}</td>
                     <td class="p-3 border">
-                        <a href="#" class="shortened-link"
-                            data-shortid="${link.shortId}"
-                            data-originalurl="${link.originalUrl || ''}">
-                            ${link.originalUrl || 'Unknown URL'}
+                        <a href="#" class="shortened-link" data-shortid="${link.shortId}" data-originalurl="${link.originalUrl}">
+                            ${link.originalUrl}
                         </a>
                     </td>
                 </tr>`;
                 tableBody.innerHTML += row;
             });
 
-            rebindLinkEvents();
+            rebindLinkEvents(); // ✅ Ensure events are rebound to new links
+        })
+        .catch(error => console.error("Error fetching links:", error))
+        .finally(() => {
+            document.getElementById("loadingIndicator").classList.add("hidden"); // ✅ Hide refresh indicator after request completes
         });
     }
 
