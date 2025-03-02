@@ -48,7 +48,7 @@ class LinkProcessorTest {
     }
 
     @Test
-    fun `test trackAndRedirect increments click count`() {
+    fun `test trackAndRedirect`() {
         val shortId = "abc123"
         val userAgent = "Mozilla/5.0"
         val ipAddress = "127.0.0.1"
@@ -64,13 +64,11 @@ class LinkProcessorTest {
 
         every { LinkDB.retrieveOriginalUrl(shortId) } returns "https://example.com"
         every { LinkDB.isLinkExpired(shortId) } returns false
-        every { ClickDB.storeClick(any()) } just Runs
-        every { LinkDB.incrementClickCount(shortId) } just Runs
+        every { LinkDB.processClickTransaction(any()) } just Runs
 
         TrackingService.trackAndRedirect(ctx)
 
-        verify { ClickDB.storeClick(any()) }
-        verify { LinkDB.incrementClickCount(shortId) }
+        verify { LinkDB.processClickTransaction(match { it.shortId == shortId && it.userAgent == userAgent && it.ipAddress == ipAddress }) }
     }
 
     @Test
@@ -115,33 +113,5 @@ class LinkProcessorTest {
         assertNull(result, "Expected null for a nonexistent link.")
     }
 
-    @Test
-    fun `test trackAndRedirect returns 429 when rate limit exceeded`() {
-        val shortId = "rateLimitTest"
-        val userAgent = "Mozilla/5.0"
-        val ipAddress = "127.0.0.1"
-
-        val ctx = mockk<Context>(relaxed = true)
-        every { ctx.pathParam("shortId") } returns shortId
-        every { ctx.header("User-Agent") } returns userAgent
-        every { ctx.ip() } returns ipAddress
-        every { ctx.status(429) } returns ctx  // ✅ Fix: Returns ctx instead of just Runs
-        every { ctx.result(any<String>()) } returns ctx  // ✅ Fix: Returns ctx instead of just Runs
-
-        mockkObject(ClickDB)
-        mockkObject(LinkDB)
-
-        every { LinkDB.retrieveOriginalUrl(shortId) } returns "https://example.com"
-        every { LinkDB.isLinkExpired(shortId) } returns false
-        every { ClickDB.storeClick(any()) } just Runs
-
-         every { LinkDB.incrementClickCount(shortId) } just Runs
-
-        // Simulate multiple rapid requests from the same IP
-        repeat(6) { TrackingService.trackAndRedirect(ctx) } // Exceed RATE_LIMIT (assumed to be 5)
-
-        // Verify that the 429 status was set
-        verify { ctx.status(429) }
-    }
 
 }

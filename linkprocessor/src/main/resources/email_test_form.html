@@ -162,7 +162,7 @@
                 }
             });
 
-            // Convert modified HTML back to string
+            // TODO RV, check this replace, empty lines issue
             let cleanedHtml = doc.body.innerHTML
                 .replace(/^\s*<br\s*\/?>/gi, '')
                 .replace(/(<br\s*\/?>\s*){3,}/gi, '<br><br>');
@@ -205,11 +205,11 @@
                 tableBody.innerHTML += row;
             });
 
-            rebindLinkEvents(); // ✅ Ensure events are rebound to new links
+            rebindLinkEvents();
         })
         .catch(error => console.error("Error fetching links:", error))
         .finally(() => {
-            document.getElementById("loadingIndicator").classList.add("hidden"); // ✅ Hide refresh indicator after request completes
+            document.getElementById("loadingIndicator").classList.add("hidden");
         });
     }
 
