@@ -185,7 +185,6 @@
     }
 
     function refreshTable() {
-
         // Start spinning animation
         document.getElementById("refreshIcon").classList.add("spin-animation");
 
@@ -198,7 +197,6 @@
     }
 
     function fetchLinks() {
-
         fetch("/api/links")
         .then(response => response.json())
         .then(data => {
@@ -315,6 +313,14 @@
             }
         });
     }
+    document.addEventListener("visibilitychange", function() {
+        if (!document.hidden) {
+            refreshTable();
+        }
+    });
+    window.addEventListener("focus", function() {
+        refreshTable();
+    });
 </script>
 
 </body>
