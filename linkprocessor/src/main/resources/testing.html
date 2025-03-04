@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Test Form</title>
+  <style>
+    /* Spinning Animation */
+   .spin-animation {
+       animation: spin 1s linear infinite;
+   }
+
+   @keyframes spin {
+       from { transform: rotate(0deg); }
+       to { transform: rotate(360deg); }
+   }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-blue-50 to-purple-100 text-gray-800">
+<div class="max-w-3xl mx-auto p-8 bg-white shadow-2xl rounded-2xl mt-12">
+  <h2 class="text-3xl font-extrabold text-center text-blue-700">📧 Email Processor Test</h2>
+
+  <!-- Email Form -->
+  <form id="emailForm" class="mt-6">
+    <label for="emailContent" class="block font-semibold text-gray-700">✏️ Email Content:</label>
+    <textarea id="emailContent" rows="10" class="w-full border rounded-lg p-3 mt-2 focus:ring-4 focus:ring-blue-400 min-h-[150px] transition-shadow duration-300"></textarea>
+
+    <button type="button" onclick="sendEmail()" id="sendButton" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-transform duration-200 transform hover:scale-105 flex items-center gap-2">
+      🚀 Send Email
+    </button>
+  </form>
+
+  <!-- Table Controls -->
+  <div class="flex items-center mt-6 justify-between">
+    <div class="flex gap-2 items-center">
+      <button onclick="refreshTable()" id="refreshButton"
+              class="bg-blue-500 hover:bg-blue-600 text-white p-3 rounded-full transition-transform duration-200 transform hover:scale-110">
+        <svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v4m0 0l4-4m-4 4l-4-4M12 20v-4m0 0l-4 4m4-4l4 4M4 12h4m0 0l-4-4m4 4l-4 4m16-4h-4m0 0l4 4m-4-4l4-4" />
+        </svg>
+      </button>
+      <span id="loadingIndicator" class="hidden text-blue-600 font-semibold ml-4">⏳ Refreshing...</span>
+    </div>
+    <button onclick="toggleAutoRefresh()" id="autoRefreshToggle" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-700 transition">🔄 Auto Refresh: OFF</button>
+  </div>
+
+  <!-- Shortened Links Table -->
+  <div class="overflow-x-auto mt-4">
+    <table class="w-full border-collapse border border-gray-300 bg-white shadow-lg rounded-lg" id="linksTable">
+      <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <tr>
+        <th class="p-3 cursor-pointer" onclick="sortTable(0)">ID ⬍</th>
+        <th class="p-3 cursor-pointer" onclick="sortTable(1)">Short ID ⬍</th>
+        <th class="p-3 cursor-pointer" onclick="sortTable(2)">Expiration ⬍</th>
+        <th class="p-3 cursor-pointer" onclick="sortTable(3)">Clicks ⬍</th>
+        <th class="p-3 cursor-pointer" onclick="sortTable(4)">Original URL ⬍</th>
+      </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-200"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  let autoRefresh = false;
+
+function refreshTable() {
+    document.getElementById("loadingIndicator").classList.remove("hidden");
+
+    // Start spinning animation
+    document.getElementById("refreshIcon").classList.add("spin-animation");
+
+    // Simulate data fetching delay
+    setTimeout(() => {
+        document.getElementById("loadingIndicator").classList.add("hidden");
+
+        // Stop spinning animation after refresh
+        document.getElementById("refreshIcon").classList.remove("spin-animation");
+    }, 1500); // Simulated fetch delay (adjust as needed)
+}
+
+
+  function sortTable(columnIndex) {
+      let table = document.getElementById("linksTable");
+      let rows = Array.from(table.rows).slice(1);
+      let sortedRows = rows.sort((rowA, rowB) => {
+          let cellA = rowA.cells[columnIndex].innerText.trim();
+          let cellB = rowB.cells[columnIndex].innerText.trim();
+          return isNaN(cellA) ? cellA.localeCompare(cellB) : cellA - cellB;
+      });
+      table.tBodies[0].append(...sortedRows);
+  }
+
+  function toggleAutoRefresh() {
+      autoRefresh = !autoRefresh;
+      document.getElementById("autoRefreshToggle").innerText = autoRefresh ? "🔄 Auto Refresh: ON" : "🔄 Auto Refresh: OFF";
+      if (autoRefresh) {
+          setInterval(refreshTable, 5000);
+      }
+  }
+</script>
+</body>
+</html>

@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bf97421-d1d8-4cf2-a8d9-2473a3354be8" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/resources/testing.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/analytics.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/analytics.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data/email_processor.db" beforeDir="false" afterPath="$PROJECT_DIR$/data/email_processor.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/email_test_form.html" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/email_test_form.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/kotlin/com/bokun/email/processor/LinkProcessorTest.kt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -52,6 +52,7 @@
         <option value="Class" />
         <option value="Kotlin Object" />
         <option value="Dockerfile" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
@@ -68,8 +69,9 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "DefaultHtmlFileTemplate": "HTML File",
     "Gradle.Build linkprocessor.executor": "Run",
-    "Gradle.LinkProcessorTest.executor": "Run",
+    "Gradle.LinkProcessorTest.executor": "Debug",
     "Gradle.LinkProcessorTest.should create short link successfully.executor": "Debug",
     "Gradle.LinkProcessorTest.should handle concurrent requests correctly.executor": "Run",
     "Gradle.LinkProcessorTest.should handle high-load scenarios.executor": "Run",
@@ -118,7 +120,7 @@
       <command value="gradle buildDependents" />
     </option>
   </component>
-  <component name="RunManager" selected="Gradle.LinkProcessorTest">
+  <component name="RunManager" selected="Kotlin.App">
     <configuration name="LinkProcessorTest" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
       <ExternalSystemSettings>
         <option name="executionName" />
@@ -133,30 +135,6 @@
             <option value=":test" />
             <option value="--tests" />
             <option value="&quot;com.bokun.email.processor.LinkProcessorTest&quot;" />
-          </list>
-        </option>
-        <option name="vmOptions" />
-      </ExternalSystemSettings>
-      <ExternalSystemDebugServerProcess>false</ExternalSystemDebugServerProcess>
-      <ExternalSystemReattachDebugProcess>true</ExternalSystemReattachDebugProcess>
-      <DebugAllEnabled>false</DebugAllEnabled>
-      <RunAsTest>true</RunAsTest>
-      <method v="2" />
-    </configuration>
-    <configuration name="LinkProcessorTest.test isLinkExpired returns false for non-expired links" type="GradleRunConfiguration" factoryName="Gradle" temporary="true">
-      <ExternalSystemSettings>
-        <option name="executionName" />
-        <option name="externalProjectPath" value="$PROJECT_DIR$" />
-        <option name="externalSystemIdString" value="GRADLE" />
-        <option name="scriptParameters" value="" />
-        <option name="taskDescriptions">
-          <list />
-        </option>
-        <option name="taskNames">
-          <list>
-            <option value=":test" />
-            <option value="--tests" />
-            <option value="&quot;com.bokun.email.processor.LinkProcessorTest.test isLinkExpired returns false for non-expired links&quot;" />
           </list>
         </option>
         <option name="vmOptions" />
@@ -239,13 +217,28 @@
       <RunAsTest>true</RunAsTest>
       <method v="2" />
     </configuration>
+    <configuration name="App" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="com.bokun.email.processor.app.App" />
+      <module name="linkprocessor.main" />
+      <shortenClasspath name="NONE" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Gradle.LinkProcessorTest" />
+      <item itemvalue="Gradle.LinkProcessorTest.test retrieveOriginalUrl returns null for nonexistent links" />
+      <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect" />
+      <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded" />
+      <item itemvalue="Kotlin.App" />
+    </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Kotlin.App" />
         <item itemvalue="Gradle.LinkProcessorTest" />
         <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect" />
         <item itemvalue="Gradle.LinkProcessorTest.test trackAndRedirect returns 429 when rate limit exceeded" />
         <item itemvalue="Gradle.LinkProcessorTest.test retrieveOriginalUrl returns null for nonexistent links" />
-        <item itemvalue="Gradle.LinkProcessorTest.test isLinkExpired returns false for non-expired links" />
       </list>
     </recent_temporary>
   </component>
