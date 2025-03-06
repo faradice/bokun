@@ -5,141 +5,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Analytics Dashboard</title>
-    <style>
-        /* Styling for links */
-        table a,
-        #processedEmail a {
-            color: #2563EB !important;
-            text-decoration: underline;
-            transition: color 0.2s ease-in-out;
-        }
-
-        /* Hover Effect: Stronger Blue */
-        table a:hover,
-        #processedEmail a:hover {
-            color: #003399 !important;
-        }
-
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 10;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-        }
-    </style>
 </head>
 <body class="bg-gradient-to-r from-blue-50 to-purple-100 text-gray-800">
+<div class="max-w-6xl mx-auto p-4">
+    <h1 class="text-5xl font-extrabold text-gray-900 text-center mt-6 mb-4 flex items-center justify-center gap-3">
+        <span class="text-4xl">📊</span>
+        <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 drop-shadow-lg">
+                Analytics Dashboard
+        </span>
+    </h1>
 
-<div class="max-w-5xl mx-auto p-8 bg-white shadow-2xl rounded-2xl mt-12">
-    <h1 class="text-4xl font-extrabold text-center text-blue-700 mb-6">📊 Email Link Click Analytics</h1>
-
-    <!-- Summary Section -->
-    <div class="bg-gray-100 p-6 rounded-lg shadow-md">
+    <div class="max-w-6xl mx-auto p-6 bg-gray-100 shadow-2xl rounded-2xl mt-6">
         <h2 class="text-2xl font-bold text-gray-800">📌 Summary</h2>
         <p class="mt-2"><b>Total Clicks:</b> <span class="text-blue-600">{{totalClicks}}</span></p>
         <p><b>Expired Links:</b> <span class="text-red-600">{{expiredCount}}</span></p>
         <p><b>Rate Limit Exceeded:</b> <span class="text-orange-500">{{rateLimitedCount}}</span></p>
     </div>
 
-    <!-- Most Clicked Links -->
-    <h2 class="text-2xl font-bold mt-8 text-gray-800">🔥 Most Clicked Links</h2>
-    <div class="overflow-x-auto">
-        <table class="w-full border border-gray-300 mt-2 bg-white shadow-md rounded-lg" id="linksTable">
-            <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <tr>
-                <th class="p-3">Short ID</th>
-                <th class="p-3">Total Clicks</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-            {{mostClickedRows}}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Detailed Link Analytics -->
-    <h2 class="text-2xl font-bold mt-8 text-gray-800">📊 Detailed Link Analytics</h2>
-    <div class="overflow-x-auto">
-        <table class="w-full border border-gray-300 mt-2 bg-white shadow-md rounded-lg">
-            <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
-            <tr>
-                <th class="p-3">Short ID</th>
-                <th class="p-3">Original URL</th>
-                <th class="p-3">Total Clicks</th>
-                <th class="p-3">Expiration Status</th>
-                <th class="p-3">Visitor Count</th>
-                <th class="p-3">Rate Limit Status</th>
-            </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200">
-            {{analyticsTableRows}}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Confirmation Modal -->
-<div id="confirmModal" class="modal hidden">
-    <div class="modal-content w-96 p-6">
-        <h2 class="text-xl font-bold text-gray-800">🚦 Redirect Confirmation</h2>
-        <p class="mt-4 text-gray-600">You are about to be redirected to:</p>
-        <p id="originalUrlText" class="mt-2 font-semibold text-blue-600 break-words"></p>
-
-        <div class="mt-6 flex justify-center gap-4">
-            <button id="confirmRedirect" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-6 rounded-lg">
-                ✅ Proceed
-            </button>
-            <button onclick="closeModal()" class="bg-red-600 hover:bg-red-700 text-white py-2 px-6 rounded-lg">
-                ❌ Cancel
-            </button>
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-2xl rounded-2xl mt-6">
+        <h2 class="text-2xl font-bold text-gray-800">🔥 Most Clicked Links</h2>
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full border border-gray-300 bg-white shadow-md rounded-lg" id="mostClickedTable">
+                <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <tr>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(0, 'mostClickedTable')">Short ID ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(1, 'mostClickedTable')">Total Clicks ⬍</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {{mostClickedRows}}
+                </tbody>
+            </table>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener("click", function(event) {
-        let target = event.target.closest("a.shortened-link");
-        if (target && target.dataset.shortid) {
-            event.preventDefault();
-            let shortId = target.dataset.shortid;
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-2xl rounded-2xl mt-6">
+        <h2 class="text-2xl font-bold text-gray-800">🚀 Frequent Visitors</h2>
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full border border-gray-300 bg-white shadow-md rounded-lg" id="frequentVisitorsTable">
+                <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <tr>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(0, 'frequentVisitorsTable')">IP Address ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(1, 'frequentVisitorsTable')">Click Count ⬍</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {{frequentVisitorsRows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            // Fetch the original URL dynamically
-            fetch(`/api/link/${shortId}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.originalUrl) {
-                        document.getElementById("originalUrlText").textContent = data.originalUrl;
-                        document.getElementById("confirmRedirect").onclick = () => {
-                            window.open(data.originalUrl, "_blank"); // Opens in new tab only when confirmed
-                            closeModal();
-                        };
-                    } else {
-                        document.getElementById("originalUrlText").textContent = "⚠️ Original URL not found";
-                    }
-                });
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-2xl rounded-2xl mt-6">
+        <h2 class="text-2xl font-bold text-gray-800">📅 Clicks Per Day</h2>
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full border border-gray-300 bg-white shadow-md rounded-lg" id="clicksPerDayTable">
+                <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <tr>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(0, 'clicksPerDayTable')">Short ID ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(1, 'clicksPerDayTable')">Date ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(2, 'clicksPerDayTable')">Click Count ⬍</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {{clicksPerDayRows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 
-            document.getElementById("confirmModal").style.display = "flex";
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-2xl rounded-2xl mt-6">
+        <h2 class="text-2xl font-bold text-gray-800">⏳ Hourly Click Trends</h2>
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full border border-gray-300 bg-white shadow-md rounded-lg" id="hourlyTrendsTable">
+                <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <tr>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(0, 'hourlyTrendsTable')">Short ID ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(1, 'hourlyTrendsTable')">Hour ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(2, 'hourlyTrendsTable')">Click Count ⬍</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {{hourlyTrendsRows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="max-w-6xl mx-auto p-6 bg-white shadow-2xl rounded-2xl mt-6">
+        <h2 class="text-2xl font-bold text-gray-800">📊 Detailed Link Analytics</h2>
+        <div class="overflow-x-auto mt-4">
+            <table class="w-full border border-gray-300 bg-white shadow-md rounded-lg" id="detailedAnalyticsTable">
+                <thead class="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+                <tr>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(0, 'detailedAnalyticsTable')">Short ID ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(1, 'detailedAnalyticsTable')">Original URL ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(2, 'detailedAnalyticsTable')">Total Clicks ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(3, 'detailedAnalyticsTable')">Expiration Status ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(4, 'detailedAnalyticsTable')">Visitor Count ⬍</th>
+                    <th class="p-3 cursor-pointer text-left" onclick="sortTable(5, 'detailedAnalyticsTable')">Rate Limit Status ⬍</th>
+                </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200">
+                {{analyticsTableRows}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function sortTable(columnIndex, tableId) {
+            let table = document.getElementById(tableId);
+            let tbody = table.querySelector("tbody");
+            let rows = Array.from(tbody.rows);
+
+            let isAscending = !table.dataset.sortDirection || table.dataset.sortDirection === "desc";
+            table.dataset.sortDirection = isAscending ? "asc" : "desc";
+
+            rows.sort((rowA, rowB) => {
+                let cellA = rowA.cells[columnIndex].innerText.trim();
+                let cellB = rowB.cells[columnIndex].innerText.trim();
+
+                let a = isNaN(cellA) ? cellA.toLowerCase() : parseFloat(cellA) || 0;
+                let b = isNaN(cellB) ? cellB.toLowerCase() : parseFloat(cellB) || 0;
+
+                return isAscending ? (a > b ? 1 : -1) : (a < b ? 1 : -1);
+            });
+
+            tbody.append(...rows);
         }
-    });
-
-    function closeModal() {
-        document.getElementById("confirmModal").style.display = "none";
-    }
-</script>
-
+    </script>
 </body>
 </html>
